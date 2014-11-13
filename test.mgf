@@ -1,10 +1,18 @@
 ### test
+MULTI_SITE_MODS=2
+INSTRUMENT=maldi
+FRAMES=1,2,3
+ERRORTOLERANT=0
+DECOY=0
+DB=osef
+CUTOUT=1,2,3
+CLE=V8-DE
 COM=10 pmol digest of Sample X15
 ITOL=1
 ITOLU=Da
 MODS=Carbamidomethyl (C)
 IT_MODS=Oxidation (M)
 MASS=Monoisotopic
-CHARGE=2 and 3+
+CHARGE=1, 2 and 3+
 USEREMAIL=leu@altered-state.edu
 USERNAME=Lou Scene

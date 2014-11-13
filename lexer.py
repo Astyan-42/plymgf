@@ -4,19 +4,17 @@ import sys
 tokens = (
     'AND', 'CHARGE','BEGIN_ION', 'COMMENT', 
     'CHARGE_VALUE', 'INT', 'COM', 'ITOL', 'ITOLU', 'MODS', 'IT_MODS',
-    'MASS', 'USERNAME', 'USEREMAIL', 'EMAIL', 'EQUAL', 'CHAR'
+    'MASS', 'USERNAME', 'USEREMAIL', 'EMAIL', 'EQUAL', 'CHAR',
+    'CLE', 'COMMA', 'CUTOUT', 'DB', 'DECOY', 'ERRORTOLERANT', 'FRAMES',
+    'INSTRUMENT', 'MULTI_SITE_MODS'
     )
 
-literals = ['=']
+#~ literals = ['=']
 
 # Tokens
 
-t_AND = r"and"
 t_CHARGE = r"CHARGE"
 t_BEGIN_ION = r"BEGIN[ ]ION"
-t_COMMENT = r"(\#){3}.*"
-t_INT = r"[0-9]+"
-t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
 t_COM = r"COM"
 t_ITOL = r"ITOL"
 t_ITOLU = r"ITOLU"
@@ -25,8 +23,22 @@ t_IT_MODS = r"IT_MODS"
 t_MASS = r"MASS"
 t_USERNAME = r"USERNAME"
 t_USEREMAIL = r"USEREMAIL"
+t_CLE = r"CLE" 
+t_CUTOUT = r"CUTOUT"
+t_DB = r"DB"
+t_DECOY = r"DECOY"
+t_ERRORTOLERANT = r"ERRORTOLERANT"
+t_FRAMES = r"FRAMES"
+t_INSTRUMENT = r"INSTRUMENT"
+t_MULTI_SITE_MODS = r"MULTI_SITE_MODS"
+
+t_AND = r"and"
+t_COMMENT = r"(\#){3}.*"
+t_INT = r"-{0,1}[0-9]+"
+t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
 t_EMAIL = r"[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]*\.[a-z]{2,3}"
 t_EQUAL = "="
+t_COMMA = ","
 t_CHAR = r"."
 
 t_ignore = "\t"
@@ -53,6 +65,7 @@ inions = -1
 sentence = ""
 meta = { }
 meta["charge"] = []
+glist = []
 ions = { }
 
 #~ Comment
@@ -69,8 +82,10 @@ def p_statement_charge(p):
 def p_charges_add(p):
     '''charges : CHARGE_VALUE
                | CHARGE_VALUE CHAR AND CHAR charges
+               | CHARGE_VALUE COMMA CHAR charges
                | INT
-               | INT CHAR AND CHAR charges'''
+               | INT CHAR AND CHAR charges
+               | INT COMMA CHAR charges'''
     global meta
     global inions
     global ions
@@ -150,6 +165,84 @@ def p_statement_com(p):
     sentence = ""
     print "COM"
 
+#~ cle 
+def p_statement_cle(p):
+    'statement : CLE EQUAL sentence'
+    global meta
+    global sentence
+    meta["cle"] = sentence
+    sentence = ""
+    print "CLE"
+
+#~ cutout
+def p_statement_cutout(p):
+    'statement : CUTOUT EQUAL list'
+    global glist
+    global meta
+    meta["cutout"] = glist
+    glist = []
+    print "CUTOUT"
+
+#~ DB 
+def p_statement_db(p):
+    'statement : DB EQUAL sentence'
+    global meta
+    global sentence
+    meta["DB"] = sentence
+    sentence = ""
+    print "DB"
+    
+#~ DECOY
+def p_statement_decoy(p):
+    'statement : DECOY EQUAL INT'
+    global meta
+    meta["decoy"] = p[3]
+    print "DECOY"
+
+#~ ERRORTOLERANT 
+def p_statement_errortolerant(p):
+    'statement : ERRORTOLERANT EQUAL INT'
+    global meta
+    meta["errortolerant"] = p[3]
+    print "ERRORTOLERANT"
+
+#~ FRAMES 
+def p_statement_frames(p):
+    'statement : FRAMES EQUAL list'
+    global glist
+    global meta
+    meta["frames"] = glist
+    glist = []
+    print "FRAMES"
+
+#~ INSTRUMENT
+def p_statement_instrument(p):
+    'statement : INSTRUMENT EQUAL sentence'
+    global meta
+    global sentence
+    meta["instrument"] = sentence
+    sentence = ""
+    print "INSTRUMENT"
+        
+#~ MULTI_SITE_MODS
+def p_statement_multisitemods(p):
+    'statement : MULTI_SITE_MODS EQUAL INT'
+    global meta
+    meta["multi_site_mods"] = p[3]
+    print "ERRORTOLERANT"
+        
+        
+        
+        
+        
+#~ list 
+def p_list(p):
+    '''list : INT COMMA list
+            | INT'''
+    global glist
+    glist.append(p[1])
+    print "LIST"
+
 #~ sentence
 def p_sentence(p):
     '''sentence : CHAR
@@ -162,7 +255,11 @@ def p_sentence(p):
 
 #~ any
 def p_any(p):
-    '''any : INT'''
+    '''any : INT
+           | CHARGE_VALUE
+           | AND
+           | EQUAL
+           | COMMA'''
     p[0] = p[1]
     print "ANY"
 
@@ -190,5 +287,4 @@ if __name__ == "__main__":
         yacc.parse(line)
     
     print meta
-            
-            
+

@@ -1,17 +1,10 @@
-# -----------------------------------------------------------------------------
-# calc.py
-#
-# A simple calculator with variables.   This is from O'Reilly's
-# "Lex and Yacc", p. 63.
-# -----------------------------------------------------------------------------
-
 import sys
 #~ sys.path.insert(0,"../..")
 
 tokens = (
     'AND', 'CHARGE','BEGIN_ION', 'COMMENT', 
-    'CHARGE_VALUE', 'COM', 'ITOL', 'ITOLU', 'MODS', 'IT_MODS',
-    'MASS', 'USERNAME', 'USEREMAIL', 'EMAIL', 'WORD'
+    'CHARGE_VALUE', 'INT', 'COM', 'ITOL', 'ITOLU', 'MODS', 'IT_MODS',
+    'MASS', 'USERNAME', 'USEREMAIL', 'EMAIL', 'EQUAL', 'CHAR'
     )
 
 literals = ['=']
@@ -22,7 +15,8 @@ t_AND = r"and"
 t_CHARGE = r"CHARGE"
 t_BEGIN_ION = r"BEGIN[ ]ION"
 t_COMMENT = r"(\#){3}.*"
-t_CHARGE_VALUE = r"[0-9]+[+-]{0,1}"
+t_INT = r"[0-9]+"
+t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
 t_COM = r"COM"
 t_ITOL = r"ITOL"
 t_ITOLU = r"ITOLU"
@@ -32,9 +26,10 @@ t_MASS = r"MASS"
 t_USERNAME = r"USERNAME"
 t_USEREMAIL = r"USEREMAIL"
 t_EMAIL = r"[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]*\.[a-z]{2,3}"
-t_WORD = r"(Lou|Scene)"
+t_EQUAL = "="
+t_CHAR = r"."
 
-t_ignore = " \t"
+t_ignore = "\t"
 
 def t_newline(t):
     r'\n+'
@@ -51,24 +46,34 @@ lex.lex()
 # Parsing rules
 
 #~ precedence = (
-    #~ ('left','+','-'),
-    #~ ('left','*','/'),
-    #~ ('right','UMINUS'),
+    #~ ('right','CHAR'),
     #~ )
 
 inions = -1
+sentence = ""
 meta = { }
 meta["charge"] = []
-meta["username"] = ""
 ions = { }
 
+#~ Comment
+def p_statement_comment(p):
+    'statement : COMMENT'
+    print "COMMENT"
+
+#~ charge
+
 def p_statement_charge(p):
-    'statement : CHARGE "=" charges'
+    'statement : CHARGE EQUAL charges'
     print "CHARGE"
 
 def p_charges_add(p):
     '''charges : CHARGE_VALUE
-               | CHARGE_VALUE AND charges'''
+               | CHARGE_VALUE CHAR AND CHAR charges
+               | INT
+               | INT CHAR AND CHAR charges'''
+    global meta
+    global inions
+    global ions
     if inions == -1:
         meta["charge"].append(p[1])
     else:
@@ -77,31 +82,98 @@ def p_charges_add(p):
         ions[inions]["charge"].append(p[1])
     print "CHARGES"
 
+#~ useremail
 def p_statement_useremail(p):
-    'statement : USEREMAIL "=" EMAIL'
+    'statement : USEREMAIL EQUAL EMAIL'
+    global meta
     meta["mail"] = p[3]
     print "MAIL"
 
+#~ username
 def p_statement_username(p):
-    'statement : USERNAME "=" sentence'
+    'statement : USERNAME EQUAL sentence'
+    global meta
+    global sentence
+    meta["username"] = sentence
+    sentence = ""
     print "USERNAME"
 
+#~ mass
+def p_statement_mass(p):
+    'statement : MASS EQUAL sentence'
+    global meta
+    global sentence
+    meta["mass"] = sentence
+    sentence = ""
+    print "MASS"
+
+#~ mods 
+def p_statement_itmods(p):
+    'statement : IT_MODS EQUAL sentence'
+    global meta
+    global sentence
+    meta["it_mods"] = sentence
+    sentence = ""
+    print "IT_MODS"
+
+#~ mods 
+def p_statement_mods(p):
+    'statement : MODS EQUAL sentence'
+    global meta
+    global sentence
+    meta["mods"] = sentence
+    sentence = ""
+    print "MODS"
+
+#~ itolu
+def p_statement_itolu(p):
+    'statement : ITOLU EQUAL sentence'
+    global meta
+    global sentence
+    meta["itolu"] = sentence
+    sentence = ""
+    print "ITOLU"
+
+#~ itol
+def p_statement_itol(p):
+    'statement : ITOL EQUAL INT'
+    global meta
+    meta["itol"] = p[3]
+    print "ITOL"
+
+#~ com
+def p_statement_com(p):
+    'statement : COM EQUAL sentence'
+    global meta
+    global sentence
+    meta["com"] = sentence
+    sentence = ""
+    print "COM"
+
+#~ sentence
 def p_sentence(p):
-    '''sentence : WORD
-                | WORD sentence'''
-    meta['username'] = p[1] + " " + meta['username']
+    '''sentence : CHAR
+                | CHAR sentence
+                | any
+                | any sentence'''
+    global sentence
+    sentence = p[1] + sentence
     print "SENTENCE"
+
+#~ any
+def p_any(p):
+    '''any : INT'''
+    p[0] = p[1]
+    print "ANY"
 
 def p_statement_bion(p):
     'statement : BEGIN_ION'
     print p[1]
 
-def p_statement_comment(p):
-    'statement : COMMENT'
-    print "COMMENT"
 
 def p_error(p):
     print "Syntax error at '%s'" % p.value
+    global meta
     print meta
     exit(1)
 

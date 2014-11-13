@@ -18,7 +18,7 @@ class MGFLexer:
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
-    head_tokens = ['CLE', 'PFA']
+    head_tokens = ['CLE', 'COM', 'PFA']
     local_tokens = []
     head_local_tokens = ['CHARGE']
     other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'COMMENT', 'AND',
@@ -27,13 +27,14 @@ class MGFLexer:
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
     
     #~ option only header
-    t_CLE = r"(CLE)"
+    t_CLE = r"((CLE))"
+    t_COM = r"((COM))"
     t_PFA = r"((PFA))"
     
     #~ option only local
     
     #~ option header and local
-    t_CHARGE = r"(CHARGE)"
+    t_CHARGE = r"((CHARGE))"
     
     #~ other tokens 
     t_EQUAL = r"="
@@ -41,7 +42,7 @@ class MGFLexer:
     t_CHAR = r"[^=,]"
     t_INT = r"-{0,1}[0-9]+"
     t_COMMENT = r"(\#){3}.*"
-    t_AND = r"(and)"
+    t_AND = r"((and))"
     t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
     
     t_ignore = '\n'
@@ -93,6 +94,12 @@ class MGFParser:
         self.content.meta["cle"] = self.content.sentence
         self.content.sentence = ""
         print "CLE"
+    
+    def p_statement_com(self, p):
+        'statement : COM EQUAL sentence'
+        self.content.meta["com"] = self.content.sentence
+        self.content.sentence = ""
+        print "COM"
     
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'

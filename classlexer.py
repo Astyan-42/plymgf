@@ -27,25 +27,24 @@ class MGFLexer:
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
     
     #~ option only header
-    t_CLE = r"CLE"
-    t_PFA = r"PFA"
+    t_CLE = r"(CLE)"
+    t_PFA = r"(PFA)"
     
     #~ option only local
     
     #~ option header and local
-    t_CHARGE = r"CHARGE"
+    t_CHARGE = r"(CHARGE)"
     
     #~ other tokens 
-    t_EQUAL = "="
-    t_COMMA = ","
+    t_EQUAL = r"="
+    t_COMMA = r","
     t_CHAR = r"[^=,]"
     t_INT = r"-{0,1}[0-9]+"
     t_COMMENT = r"(\#){3}.*"
-    t_AND = "and"
+    t_AND = r"(and)"
     t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
     
-    
-    t_ignore = '\t\n'
+    t_ignore = '\n'
 
     def t_error(self,t):
         print "Illegal character '%s'" % t.value[0]
@@ -68,7 +67,7 @@ class MGFParser:
         self.lexer = MGFLexer()
         self.content = Content()
         self.tokens = self.lexer.tokens
-        self.parser = yacc.yacc(module=self,write_tables=0,debug=False)
+        self.parser = yacc.yacc(module=self,write_tables=0,debug=True)
 
     def parse(self,data):
         if data:
@@ -84,6 +83,7 @@ class MGFParser:
 
     def p_statement_comment(self, p):
         'statement : COMMENT'
+        print "COMMENT"
         pass
 
 #~ TERMINAL 
@@ -92,13 +92,16 @@ class MGFParser:
         'statement : CLE EQUAL sentence'
         self.content.meta["cle"] = self.content.sentence
         self.content.sentence = ""
+        print "CLE"
     
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'
         self.content.meta["pfa"] = p[3]
+        print "PFA"
         
     def p_statement_charge(self, p):
         'statement : CHARGE EQUAL charges'
+        print "CHARGE"
         pass
 
 #~ NON TERMINAL 
@@ -107,6 +110,7 @@ class MGFParser:
         '''sentence : CHAR
                     | CHAR sentence '''
         self.content.sentence = p[1] + self.content.sentence
+        print "sentence"
         
     def p_charges_add(self, p):
         """charges : CHARGE_VALUE
@@ -116,6 +120,7 @@ class MGFParser:
                    | INT CHAR AND CHAR charges
                    | INT COMMA CHAR charges"""
         self.content.meta["charge"].append(p[1])
+        print "charges"
         
 def main(argv):
     parser = MGFParser()

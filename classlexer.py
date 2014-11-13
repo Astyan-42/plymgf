@@ -28,7 +28,7 @@ class MGFLexer:
     
     #~ option only header
     t_CLE = r"(CLE)"
-    t_PFA = r"(PFA)"
+    t_PFA = r"((PFA))"
     
     #~ option only local
     

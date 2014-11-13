@@ -6,10 +6,12 @@ tokens = (
     'CHARGE_VALUE', 'INT', 'COM', 'ITOL', 'ITOLU', 'MODS', 'IT_MODS',
     'MASS', 'USERNAME', 'USEREMAIL', 'EMAIL', 'EQUAL', 'CHAR',
     'CLE', 'COMMA', 'CUTOUT', 'DB', 'DECOY', 'ERRORTOLERANT', 'FRAMES',
-    'INSTRUMENT', 'MULTI_SITE_MODS'
+    'INSTRUMENT', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR',
+    'PFA', 'FLOAT', 'PRECURSOR', 'QUANTITATION', 'REPORT', 'AUTO',
+    'REPTYPE', 'SEARCH', 'SEG', 'TAXONOMY', 'USER'
     )
 
-#~ literals = ['=']
+#~ literals = ["="]
 
 # Tokens
 
@@ -31,10 +33,23 @@ t_ERRORTOLERANT = r"ERRORTOLERANT"
 t_FRAMES = r"FRAMES"
 t_INSTRUMENT = r"INSTRUMENT"
 t_MULTI_SITE_MODS = r"MULTI_SITE_MODS"
+t_PEP_ISOTOPE_ERROR = r"PEP_ISOTOPE_ERROR"
+t_PFA = r"PFA"
+t_PRECURSOR = r"PRECURSOR"
+t_QUANTITATION = r"QUANTITATION"
+t_REPORT = r"REPORT"
+t_REPTYPE = r"REPTYPE"
+t_SEARCH = r"SEARCH"
+t_SEG = r"SEG"
+t_TAXONOMY = r"TAXONOMY"
+t_USER = r"USER"
 
+
+t_AUTO = r"AUTO"
 t_AND = r"and"
 t_COMMENT = r"(\#){3}.*"
 t_INT = r"-{0,1}[0-9]+"
+t_FLOAT = r"-{0,1}[0-9]+\.[0-9]*"
 t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
 t_EMAIL = r"[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]*\.[a-z]{2,3}"
 t_EQUAL = "="
@@ -229,12 +244,92 @@ def p_statement_multisitemods(p):
     'statement : MULTI_SITE_MODS EQUAL INT'
     global meta
     meta["multi_site_mods"] = p[3]
-    print "ERRORTOLERANT"
-        
-        
-        
-        
-        
+    print "MULTI_SITE_MODS"
+
+#~ PEP_ISOTOPE_ERROR 
+def p_statement_pepisotopeerror(p):
+    'statement : PEP_ISOTOPE_ERROR EQUAL INT'
+    global meta
+    meta["pep_isotope_error"] = p[3]
+    print "PEP_ISOTOPE_ERROR"
+
+#~ PFA
+def p_statement_pfa(p):
+    'statement : PFA EQUAL INT'
+    global meta
+    meta["pfa"] = p[3]
+    print "PFA"
+
+#~ PRECURSOR
+def p_statement_precursor(p):
+    'statement : PRECURSOR EQUAL FLOAT'
+    global meta
+    meta["precursor"] = p[3]
+    print "PRECURSOR"
+
+#~ QUANTITATION
+def p_statement_quantification(p):
+    'statement : QUANTITATION EQUAL sentence'
+    global meta
+    global sentence
+    meta["quantification"] = sentence
+    sentence = ""
+    print "QUANTITATION"
+    
+#~ REPORT 
+def p_statement_report(p):
+    '''statement : REPORT EQUAL INT
+                 | REPORT EQUAL AUTO'''
+    global meta
+    meta["report"] = p[3]
+    print "REPORT"
+
+#~ REPTYPE
+def p_statement_reptype(p):
+    'statement : REPTYPE EQUAL sentence'
+    global meta
+    global sentence
+    meta["reptype"] = sentence
+    sentence = ""
+    print "REPTYPE"
+
+#~ SEARCH
+def p_statement_search(p):
+    'statement : SEARCH EQUAL sentence'
+    global meta
+    global sentence
+    meta["search"] = sentence
+    sentence = ""
+    print "SEARCH"
+
+#~ SEG
+def p_statement_seg(p):
+    '''statement : SEG EQUAL INT
+                 | SEG EQUAL FLOAT'''
+    global meta
+    meta["seg"] = p[3]
+    print "SEG"
+
+#~ TAXONOMY
+def p_statement_taxonomy(p):
+    'statement : TAXONOMY EQUAL sentence'
+    global meta
+    global sentence
+    meta["taxonomy"] = sentence
+    sentence = ""
+    print "TAXONOMY"
+    
+#~ USER
+def p_statement_user(p):
+    'statement : USER INT EQUAL sentence'
+    global meta
+    global sentence
+    meta["user"+p[2]] = sentence
+    sentence = ""
+    print "USER"
+
+
+
 #~ list 
 def p_list(p):
     '''list : INT COMMA list
@@ -256,6 +351,7 @@ def p_sentence(p):
 #~ any
 def p_any(p):
     '''any : INT
+           | FLOAT
            | CHARGE_VALUE
            | AND
            | EQUAL
@@ -278,7 +374,6 @@ import ply.yacc as yacc
 yacc.yacc()
 
 if __name__ == "__main__":
-    
     try:
         s = open("test.mgf")
     except EOFError:

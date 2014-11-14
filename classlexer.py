@@ -30,7 +30,8 @@ class MGFLexer(object):
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
-    local_tokens = ['COMP']
+    local_tokens = ['COMP', 'ETAG', 'LOCUS', 'PEPMASS', 'RAWFILE',
+    'RAWSCANS', 'RTINSECONDS', 'SEQ', 'TAG', 'TITLE']
     head_tokens = ['CLE', 'COM', 'CUTOUT', 'DB', 'DECOY',
     'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL', 'MASS', 
     'MODS', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
@@ -50,6 +51,42 @@ class MGFLexer(object):
     
     def t_COMP(self, t):
         r"COMP"
+        return t
+    
+    def t_ETAG(self, t):
+        r"ETAG"
+        return t
+    
+    def t_LOCUS(self, t):
+        r"LOCUS"
+        return t
+    
+    def t_PEPMASS(self, t):
+        r"PEPMASS"
+        return t
+    
+    def t_RAWFILE(self, t):
+        r"RAWFILE"
+        return t
+    
+    def t_RAWSCANS(self, t):
+        r"RAWSCANS"
+        return t
+    
+    def t_RTINSECONDS(self, t):
+        r"RTINSECONDS"
+        return t
+    
+    def t_SEQ(self, t):
+        r"SEQ"
+        return t
+        
+    def t_TAG(self, t):
+        r"TAG"
+        return t
+        
+    def t_TITLE(self, t):
+        r"TITLE"
         return t
     
 #~ option only header
@@ -412,7 +449,60 @@ class MGFParser(object):
         self.content.ionsinfo["comp"] = self.content.sentence
         self.content.sentence = ""
         print "COMP"
-
+    
+    def p_statement_etag(self,p):
+        'statement : ETAG EQUAL sentence'
+        self.content.ionsinfo["etag"] = self.content.sentence
+        self.content.sentence = ""
+        print "ETAG"
+    
+    def p_statement_locus(self, p):
+        'statement : LOCUS EQUAL sentence'
+        self.content.ionsinfo["locus"] = self.content.sentence
+        self.content.sentence = ""
+        print "LOCUS"
+    
+    def p_statement_pepmass(self, p):
+        'statement : PEPMASS EQUAL FLOAT'
+        self.content.ionsinfo["pepmass"] = p[3]
+        print "PEPMASS"
+    
+    def p_statement_rawfile(self, p):
+        'statement : RAWFILE EQUAL sentence'
+        self.content.ionsinfo["rawfile"] = self.content.sentence
+        self.content.sentence = ""
+        print "RAWFILE"
+        
+    def p_statement_rawscans(self, p):
+        'statement : RAWSCANS EQUAL sentence'
+        self.content.ionsinfo["rawscans"] = self.content.sentence
+        self.content.sentence = ""
+        print "RAWSCANS"
+    
+    def p_statement_rtinseconds(self, p):
+        'statement : RTINSECONDS EQUAL sentence'
+        self.content.ionsinfo["rtinseconds"] = self.content.sentence
+        self.content.sentence = ""
+        print "RTINSECONDS"
+    
+    def p_statement_seq(self, p):
+        'statement : SEQ EQUAL sentence'
+        self.content.ionsinfo["seq"] = self.content.sentence
+        self.content.sentence = ""
+        print "SEQ"
+    
+    def p_statement_tag(self, p):
+        'statement : TAG EQUAL sentence'
+        self.content.ionsinfo["tag"] = self.content.sentence
+        self.content.sentence = ""
+        print "TAG"
+        
+    def p_statement_title(self, p):
+        'statement : TITLE EQUAL sentence'
+        self.content.ionsinfo["title"] = self.content.sentence
+        self.content.sentence = ""
+        print "TITLE"
+    
 #~ option header and local
 
     def p_statement_charge(self, p):

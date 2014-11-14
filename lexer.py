@@ -44,9 +44,8 @@ t_SEG = r"SEG"
 t_TAXONOMY = r"TAXONOMY"
 t_USER = r"USER"
 
-
-t_AUTO = r"AUTO"
 t_AND = r"and"
+t_AUTO = r"AUTO"
 t_COMMENT = r"(\#){3}.*"
 t_INT = r"-{0,1}[0-9]+"
 t_FLOAT = r"-{0,1}[0-9]+\.[0-9]*"
@@ -55,6 +54,7 @@ t_EMAIL = r"[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]*\.[a-z]{2,3}"
 t_EQUAL = "="
 t_COMMA = ","
 t_CHAR = r"."
+
 
 t_ignore = "\t"
 

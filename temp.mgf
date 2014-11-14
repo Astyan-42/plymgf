@@ -2,6 +2,9 @@
 CHARGE=1
 CHARGE=1+, 2
 CHARGE=1 and 2
+DB=mazfze
+FORMAT=Default
+DECOY=1
 PFA=2
 CUTOUT=1,2,3
 COM=erzer

@@ -18,7 +18,8 @@ class MGFLexer:
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
-    head_tokens = ['CLE', 'COM', 'CUTOUT', 'PFA']
+    head_tokens = ['CLE', 'COM', 'CUTOUT', 'DB', 'DECOY',
+    'ERRORTOLERANT', 'FORMAT', 'PFA']
     local_tokens = []
     head_local_tokens = ['CHARGE']
     other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'COMMENT', 'AND',
@@ -39,6 +40,22 @@ class MGFLexer:
     
     def t_CUTOUT(self, t):
         r"CUTOUT"
+        return t
+    
+    def t_DB(self, t):
+        r"DB"
+        return t
+
+    def t_DECOY(self, t):
+        r"DECOY"
+        return t
+    
+    def t_ERRORTOLERANT(self, t):
+        r"ERRORTOLERANT"
+        return t
+    
+    def t_FORMAT(self, t):
+        r"FORMAT"
         return t
     
     def t_PFA(self, t):
@@ -146,6 +163,30 @@ class MGFParser:
         self.content.meta["cutout"] = self.content.glist
         self.content.glist = []
         print "CUTOUT"
+    
+    def p_statement_db(self, p):
+        'statement : DB EQUAL sentence'
+        self.content.meta["db"] = self.content.sentence
+        self.content.sentence = ""
+        print "DB"
+    
+    def p_statement_decoy(self, p):
+        'statement : DECOY EQUAL INT'
+        self.content.meta["decoy"] = p[3]
+        self.content.sentence = ""
+        print "DECOY"
+    
+    def p_statement_errortolerant(self, p):
+        'statement : ERRORTOLERANT EQUAL INT'
+        self.content.meta["errortolerant"] = p[3]
+        self.content.sentence = ""
+        print "ERRORTOLERANT"
+    
+    def p_statement_format(self, p):
+        'statement : FORMAT EQUAL sentence'
+        self.content.meta["format"] = self.content.sentence
+        self.content.sentence = ""
+        print "FORMAT"
     
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'

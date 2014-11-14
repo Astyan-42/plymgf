@@ -8,23 +8,36 @@ import sys
 class Content(object):
     
     def __init__(self):
-        self.meta = { }
-        self.meta["charge"] = []
         self.sentence = ""
         self.glist = []
+        
+        self.meta = {}
+        
+        self.ionslist = []
+        self.ionsinfo = {}
+        self.peaklist = []
+        self.inions = 0 # to put at -1 when finish 
+        
+    def get_right(self):
+        if self.inions == -1:
+            return self.meta
+        else:
+            return self.ionsinfo
+        
 
 class MGFLexer(object):
     
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
+    local_tokens = ['COMP']
     head_tokens = ['CLE', 'COM', 'CUTOUT', 'DB', 'DECOY',
     'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL', 'MASS', 
     'MODS', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
     'QUANTITATION', 'REPORT', 'REPTYPE', 'SEARCH', 'SEG', 'TAXONOMY',
     'USEREMAIL', 'USERNAME', 'USER']
-    local_tokens = []
-    head_local_tokens = ['CHARGE']
+    head_local_tokens = ['CHARGE', 'INSTRUMENT', 'IT_MODS', 'TOLU',
+    'TOL']
     other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'FLOAT', 
     'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
     
@@ -32,6 +45,13 @@ class MGFLexer(object):
 
 
 #~ /!\ order is important (not greedy)
+
+#~ option only local
+    
+    def t_COMP(self, t):
+        r"COMP"
+        return t
+    
 #~ option only header
     def t_CLE(self, t):
         r"CLE"
@@ -133,12 +153,25 @@ class MGFLexer(object):
         r"USER"
         return t
 
-    
-#~ option only local
-    
 #~ option header and local
     def t_CHARGE(self, t):
         r"CHARGE"
+        return t
+    
+    def t_INSTRUMENT(self, t):
+        r"INSTRUMENT"
+        return t
+    
+    def t_IT_MODS(self, t):
+        r"IT_MODS"
+        return t
+    
+    def t_TOLU(self, t):
+        r"TOLU"
+        return t
+    
+    def t_TOL(self, t):
+        r"TOL"
         return t
     
 #~ other tokens 
@@ -373,13 +406,46 @@ class MGFParser(object):
         print "USER"+str(p[2])
     
 #~ option only local
+    
+    def p_statement_comp(self, p):
+        '''statement : COMP EQUAL sentence'''
+        self.content.ionsinfo["comp"] = self.content.sentence
+        self.content.sentence = ""
+        print "COMP"
 
 #~ option header and local
 
     def p_statement_charge(self, p):
         'statement : CHARGE EQUAL charges'
+        self.content.get_right()["charges"] = self.content.glist
+        self.content.glist = []
         print "CHARGE"
-        pass
+    
+    def p_statement_instrument(self, p):
+        'statement : INSTRUMENT EQUAL sentence'
+        self.content.get_right()["instrument"] = self.content.sentence
+        self.content.sentence = ""
+        print "INSTRUMENT"
+    
+    def p_statement_it_mods(self, p):
+        'statement : IT_MODS EQUAL sentence'
+        self.content.get_right()["it_mods"] = self.content.sentence
+        self.content.sentence = ""
+        print "IT_MODS"
+    
+    def p_statement_tol(self, p):
+        '''statement : TOL EQUAL INT
+                     | TOL EQUAL FLOAT'''
+        self.content.get_right()["tol"] = p[3]
+        print "TOL"
+    
+    def p_statement_tolu(self, p):
+        'statement : TOLU EQUAL sentence'
+        self.content.get_right()["tolu"] = self.content.sentence
+        self.content.sentence = ""
+        print "TOLU"
+    
+    
 
 #~ NON TERMINAL 
     
@@ -408,7 +474,7 @@ class MGFParser(object):
                    | INT
                    | INT CHAR AND CHAR charges
                    | INT COMMA CHAR charges"""
-        self.content.meta["charge"].append(p[1])
+        self.content.glist.append(p[1])
         print "charges"
     
     def p_list(self, p):
@@ -427,6 +493,7 @@ def main(argv):
         print line
         parser.parse(line)
     print parser.content.meta
+    print parser.content.ionsinfo
 
 if __name__ == '__main__':
     main(sys.argv)

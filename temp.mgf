@@ -1,8 +1,9 @@
 ### truc
 CHARGE=1
-CHARGE=1, 2+
+CHARGE=1+, 2
 CHARGE=1 and 2
 PFA=2
+CUTOUT=1,2,3
 COM=erzer
 CLE=ezrzege
 CHARGE=1, 3+ and 4-

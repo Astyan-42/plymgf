@@ -18,41 +18,79 @@ class MGFLexer:
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
-    head_tokens = ['CLE', 'COM', 'PFA']
+    head_tokens = ['CLE', 'COM', 'CUTOUT', 'PFA']
     local_tokens = []
     head_local_tokens = ['CHARGE']
     other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'COMMENT', 'AND',
     'CHARGE_VALUE']
     
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
+
+
+#~ /!\ order is important (not greedy ???) : why ? 
+#~ option only header
+    def t_CLE(self, t):
+        r"CLE"
+        return t
     
-    #~ option only header
-    t_CLE = r"((CLE))"
-    t_COM = r"((COM))"
-    t_PFA = r"((PFA))"
+    def t_COM(self, t):
+        r"COM"
+        return t
     
-    #~ option only local
+    def t_CUTOUT(self, t):
+        r"CUTOUT"
+        return t
     
-    #~ option header and local
-    t_CHARGE = r"((CHARGE))"
+    def t_PFA(self, t):
+        r"PFA"
+        return t
     
-    #~ other tokens 
-    t_EQUAL = r"="
-    t_COMMA = r","
-    t_CHAR = r"[^=,]"
-    t_INT = r"-{0,1}[0-9]+"
-    t_COMMENT = r"(\#){3}.*"
-    t_AND = r"((and))"
-    t_CHARGE_VALUE = r"[0-9]+[+-]{1}"
+#~ option only local
+    
+#~ option header and local
+    def t_CHARGE(self, t):
+        r"CHARGE"
+        return t
+    
+#~ other tokens 
+    def t_EQUAL(self, t):
+        r"="
+        return t
+    
+    def t_COMMA(self, t):
+        r","
+        return t
+    
+    def t_COMMENT(self, t):
+        r"(\#){3}.*"
+        return t
+    
+    def t_CHARGE_VALUE(self, t):
+        r"[0-9]+(\+|-)"
+        return t
+    
+    def t_INT(self, t):
+        r"-{0,1}[0-9]+"
+        t.value = int(t.value)
+        return t
+    
+    def t_AND(self, t):
+        r"and"
+        return t
+    
+    def t_CHAR(self, t):
+        r"[^,=]"
+        return t
     
     t_ignore = '\n'
 
-    def t_error(self,t):
+    def t_error(self, t):
+        print "ERROR"
         print "Illegal character '%s'" % t.value[0]
         t.lexer.skip(1)
         
 
-    def tokenize(self,data):
+    def tokenize(self, data):
         'Debug method!'
         self.lexer.input(data)
         while True:
@@ -76,7 +114,8 @@ class MGFParser:
         else:
             return []
 
-    def p_error(self,p):
+    def p_error(self, p):
+        print "ERROR"
         print "Syntax error at '%s'" % p.value
         exit(1)
 
@@ -88,7 +127,8 @@ class MGFParser:
         pass
 
 #~ TERMINAL 
-    
+
+#~ option only header
     def p_statement_cle(self, p):
         'statement : CLE EQUAL sentence'
         self.content.meta["cle"] = self.content.sentence
@@ -101,11 +141,21 @@ class MGFParser:
         self.content.sentence = ""
         print "COM"
     
+    def p_statement_cutout(self, p):
+        'statement : CUTOUT EQUAL list'
+        self.content.meta["cutout"] = self.content.glist
+        self.content.glist = []
+        print "CUTOUT"
+    
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'
         self.content.meta["pfa"] = p[3]
         print "PFA"
-        
+
+#~ option only local
+
+#~ option header and local
+
     def p_statement_charge(self, p):
         'statement : CHARGE EQUAL charges'
         print "CHARGE"
@@ -119,7 +169,7 @@ class MGFParser:
         self.content.sentence = p[1] + self.content.sentence
         print "sentence"
         
-    def p_charges_add(self, p):
+    def p_charges(self, p):
         """charges : CHARGE_VALUE
                    | CHARGE_VALUE CHAR AND CHAR charges
                    | CHARGE_VALUE COMMA CHAR charges
@@ -128,6 +178,12 @@ class MGFParser:
                    | INT COMMA CHAR charges"""
         self.content.meta["charge"].append(p[1])
         print "charges"
+    
+    def p_list(self, p):
+        '''list : INT COMMA list
+                | INT'''
+        self.content.glist.append(p[1])
+        print "LIST"
         
 def main(argv):
     parser = MGFParser()

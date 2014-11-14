@@ -5,7 +5,7 @@ import ply.yacc as yacc
 
 import sys
 
-class Content:
+class Content(object):
     
     def __init__(self):
         self.meta = { }
@@ -13,22 +13,25 @@ class Content:
         self.sentence = ""
         self.glist = []
 
-class MGFLexer:
+class MGFLexer(object):
     
     def __init__(self):
         self.lexer = lex.lex(module=self)
     
     head_tokens = ['CLE', 'COM', 'CUTOUT', 'DB', 'DECOY',
-    'ERRORTOLERANT', 'FORMAT', 'PFA']
+    'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL', 'MASS', 
+    'MODS', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
+    'QUANTITATION', 'REPORT', 'REPTYPE', 'SEARCH', 'SEG', 'TAXONOMY',
+    'USEREMAIL', 'USERNAME', 'USER']
     local_tokens = []
     head_local_tokens = ['CHARGE']
-    other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'COMMENT', 'AND',
-    'CHARGE_VALUE']
+    other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'FLOAT', 
+    'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
     
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
 
 
-#~ /!\ order is important (not greedy ???) : why ? 
+#~ /!\ order is important (not greedy)
 #~ option only header
     def t_CLE(self, t):
         r"CLE"
@@ -58,9 +61,78 @@ class MGFLexer:
         r"FORMAT"
         return t
     
+    def t_FRAMES(self, t):
+        r"FRAMES"
+        return t
+    
+    def t_ITOLU(self, t):
+        r"ITOLU"
+        return t
+    
+    def t_ITOL(self, t):
+        r"ITOL"
+        return t
+    
+    def t_MASS(self, t):
+        r"MASS"
+        return t
+    
+    def t_MODS(self, t):
+        r"MODS"
+        return t
+    
+    def t_MULTI_SITE_MODS(self, t):
+        r"MULTI_SITE_MODS"
+        return t
+        
+    def t_PEP_ISOTOPE_ERROR(self, t):
+        r"PEP_ISOTOPE_ERROR"
+        return t
+    
     def t_PFA(self, t):
         r"PFA"
         return t
+    
+    def t_PRECURSOR(self, t):
+        r"PRECURSOR"
+        return t
+    
+    def t_QUANTITATION(self, t):
+        r"QUANTITATION"
+        return t
+    
+    def t_REPORT(self, t):
+        r"REPORT"
+        return t
+    
+    def t_REPTYPE(self, t):
+        r"REPTYPE"
+        return t
+    
+    def t_SEARCH(self, t):
+        r"SEARCH"
+        return t
+    
+    def t_SEG(self, t):
+        r"SEG"
+        return t
+    
+    def t_TAXONOMY(self, t):
+        r"TAXONOMY"
+        return t
+    
+    def t_USEREMAIL(self, t):
+        r"USEREMAIL"
+        return t
+    
+    def t_USERNAME(self, t):
+        r"USERNAME"
+        return t
+    
+    def t_USER(self, t):
+        r"USER"
+        return t
+
     
 #~ option only local
     
@@ -86,6 +158,11 @@ class MGFLexer:
         r"[0-9]+(\+|-)"
         return t
     
+    def t_FLOAT(self, t):
+        r"-{0,1}[0-9]+\.[0-9]+"
+        t.value = float(t.value)
+        return t
+    
     def t_INT(self, t):
         r"-{0,1}[0-9]+"
         t.value = int(t.value)
@@ -93,6 +170,10 @@ class MGFLexer:
     
     def t_AND(self, t):
         r"and"
+        return t
+    
+    def t_AUTO(self, t):
+        r"AUTO"
         return t
     
     def t_CHAR(self, t):
@@ -117,7 +198,7 @@ class MGFLexer:
             else:
                 break
 
-class MGFParser:
+class MGFParser(object):
     
     def __init__(self):
         self.lexer = MGFLexer()
@@ -188,11 +269,109 @@ class MGFParser:
         self.content.sentence = ""
         print "FORMAT"
     
+    def p_statement_frames(self, p):
+        'statement : FRAMES EQUAL list'
+        self.content.meta["frames"] = self.content.glist
+        self.content.glist = []
+        print "FRAMES"
+    
+    def p_statement_itol(self, p):
+        '''statement : ITOL EQUAL INT
+                     | ITOL EQUAL FLOAT'''
+        self.content.meta["itol"] = p[3]
+        print "ITOL"
+    
+    def p_statement_itolu(self, p):
+        'statement : ITOLU EQUAL sentence'
+        self.content.meta["itolu"] = self.content.sentence
+        self.content.sentence = ""
+        print "ITOLU"
+    
+    def p_statement_mass(self, p):
+        'statement : MASS EQUAL sentence'
+        self.content.meta["mass"] = self.content.sentence
+        self.content.sentence = ""
+        print "MASS"
+    
+    def p_statement_mods(self, p):
+        'statement : MODS EQUAL sentence'
+        self.content.meta["mods"] = self.content.sentence
+        self.content.sentence = ""
+        print "MODS"
+        
+    def p_statement_multi_site_mods(self, p):
+        'statement : MULTI_SITE_MODS EQUAL INT'
+        self.content.meta["multi_site_mods"] = p[3]
+        print "MULTI_SITE_MODS"
+    
+    def p_statement_pep_isotope_error(self, p):
+        'statement : PEP_ISOTOPE_ERROR EQUAL INT'
+        self.content.meta["pep_isotope_error"] = p[3]
+        print "PEP_ISOTOPE_ERROR"
+    
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'
         self.content.meta["pfa"] = p[3]
         print "PFA"
-
+    
+    def p_statement_precursor(self, p):
+        'statement : PRECURSOR EQUAL FLOAT'
+        self.content.meta["precursor"] = p[3]
+        print "PRECURSOR"
+    
+    def p_statement_quantification(self, p):
+        'statement : QUANTITATION EQUAL sentence'
+        self.content.meta["quantitation"] = self.content.sentence
+        self.content.sentence = ""
+        print "QUANTITATION"
+    
+    def p_statement_report(self, p):
+        '''statement : REPORT EQUAL AUTO
+                     | REPORT EQUAL INT'''
+        self.content.meta["report"] = p[3]
+        print "REPORT"
+    
+    def p_statement_reptype(self, p):
+        '''statement : REPTYPE EQUAL sentence'''
+        self.content.meta["reptype"] = self.content.sentence
+        self.content.sentence = ""
+        print "REPTYPE"
+    
+    def p_statement_search(self, p):
+        '''statement : SEARCH EQUAL sentence'''
+        self.content.meta["search"] = self.content.sentence
+        self.content.sentence = ""
+        print "SEARCH"
+    
+    def p_statement_seg(self, p):
+        '''statement : SEG EQUAL FLOAT'''
+        self.content.meta["seg"] = p[3]
+        print "SEG"
+        
+    def p_statement_taxonomy(self, p):
+        '''statement : TAXONOMY EQUAL sentence'''
+        self.content.meta["taxonomy"] = self.content.sentence
+        self.content.sentence = ""
+        print "TAXONOMY"
+        
+    def p_statement_useremail(self, p):
+        '''statement : USEREMAIL EQUAL sentence'''
+        self.content.meta["email"] = self.content.sentence
+        self.content.sentence = ""
+        print "USEREMAIL"
+    
+    def p_statement_username(self, p):
+        '''statement : USERNAME EQUAL sentence'''
+        self.content.meta["username"] = self.content.sentence
+        self.content.sentence = ""
+        print "USERNAME"
+    
+    def p_statement_user(self, p):
+        '''statement : USER INT EQUAL sentence'''
+        self.content.meta["user"+str(p[2])] = self.content.sentence
+        self.content.sentence = ""
+        print "USER"+str(p[2])
+    
 #~ option only local
 
 #~ option header and local
@@ -206,8 +385,20 @@ class MGFParser:
     
     def p_sentence(self, p):
         '''sentence : CHAR
-                    | CHAR sentence '''
-        self.content.sentence = p[1] + self.content.sentence
+                    | INT
+                    | FLOAT
+                    | AND
+                    | EQUAL
+                    | COMMA
+                    | CHARGE_VALUE
+                    | CHAR sentence
+                    | INT sentence
+                    | FLOAT sentence
+                    | AND sentence
+                    | EQUAL sentence
+                    | COMMA sentence
+                    | CHARGE_VALUE sentence '''
+        self.content.sentence = str(p[1]) + self.content.sentence
         print "sentence"
         
     def p_charges(self, p):

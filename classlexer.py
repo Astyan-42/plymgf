@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# encoding: utf-8
 import ply.lex as lex
 import ply.yacc as yacc
 
@@ -678,7 +678,7 @@ class MGFParser(object):
 def main(argv):
     parser = MGFParser()
     try:
-        s = open("temp4.mgf")
+        s = open("temp8.mgf")
     except EOFError:
         pass
     for line in s:

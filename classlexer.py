@@ -36,7 +36,7 @@ class MGFLexer(object):
     'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL', 'MASS', 
     'MODS', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
     'QUANTITATION', 'REPORT', 'REPTYPE', 'SEARCH', 'SEG', 'TAXONOMY',
-    'USEREMAIL', 'USERNAME', 'USER']
+    'USEREMAIL', 'USERNAME', 'USER', 'BEGIN', 'END', 'IONS']
     head_local_tokens = ['CHARGE', 'INSTRUMENT', 'IT_MODS', 'TOLU',
     'TOL']
     other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'FLOAT', 
@@ -188,6 +188,18 @@ class MGFLexer(object):
     
     def t_USER(self, t):
         r"USER"
+        return t
+    
+    def t_BEGIN(self, t):
+        r"BEGIN"
+        return t
+    
+    def t_END(self, t):
+        r"END"
+        return t
+    
+    def t_IONS(self, t):
+        r"IONS"
         return t
 
 #~ option header and local
@@ -441,6 +453,16 @@ class MGFParser(object):
         self.content.meta["user"+str(p[2])] = self.content.sentence
         self.content.sentence = ""
         print "USER"+str(p[2])
+        
+    def p_statement_begin_ions(self, p):
+        '''statement : BEGIN CHAR IONS'''
+        self.content.meta["begin_ions"] = "ok"
+        print "BEGIN_IONS"
+        
+    def p_statement_end_ions(self, p):
+        '''statement : END CHAR IONS'''
+        self.content.meta["end_ions"] = "ok"
+        print "END_IONS"
     
 #~ option only local
     

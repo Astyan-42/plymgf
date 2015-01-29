@@ -531,9 +531,15 @@ class MGFParser(object):
         print "LOCUS"
     
     def p_statement_pepmass(self, p):
-        'statement : PEPMASS EQUAL FLOAT'
+        '''statement : PEPMASS EQUAL FLOAT
+                     | PEPMASS EQUAL FLOAT CHAR INT
+                     | PEPMASS EQUAL FLOAT CHAR
+                     | PEPMASS EQUAL FLOAT CHAR INT FLOAT'''
         self.in_local()
-        self.content.ionsinfo["pepmass"] = p[3]
+        if len(p) >= 6:
+            self.content.ionsinfo["pepmass"] = (p[3], p[5])
+        else:
+            self.content.ionsinfo["pepmass"] = (p[3], -1)
         print "PEPMASS"
     
     def p_statement_rawfile(self, p):
@@ -577,16 +583,27 @@ class MGFParser(object):
         self.content.ionsinfo["title"] = self.content.sentence
         self.content.sentence = ""
         print "TITLE"
-        
-    def p_statement_peak(self, p):
+    
+    def p_statement_peak_charge(self, p):
         '''statement : FLOAT CHAR FLOAT CHAR INT
+                     | FLOAT CHAR FLOAT CHAR INT CHAR
                      | FLOAT CHAR FLOAT CHAR CHARGE_VALUE
-                     | FLOAT CHAR FLOAT'''
+                     | FLOAT CHAR FLOAT CHAR CHARGE_VALUE CHAR
+                     | FLOAT CHAR INT CHAR INT
+                     | FLOAT CHAR INT CHAR INT CHAR
+                     | FLOAT CHAR INT CHAR CHARGE_VALUE
+                     | FLOAT CHAR INT CHAR CHARGE_VALUE CHAR'''
         self.in_local()
-        if len(p) == 6:
-            self.content.peaklist.append((p[1], p[3], p[5]))
-        else:
-            self.content.peaklist.append((p[1], p[3], 0))
+        self.content.peaklist.append((p[1], p[3], p[5]))
+        print "PEAK"
+        
+    def p_statement_peak_wcharge(self, p):
+        '''statement : FLOAT CHAR FLOAT
+                     | FLOAT CHAR FLOAT CHAR
+                     | FLOAT CHAR INT
+                     | FLOAT CHAR INT CHAR'''
+        self.in_local()
+        self.content.peaklist.append((p[1], p[3], 0))
         print "PEAK"
     
 #~ option header and local
@@ -661,12 +678,13 @@ class MGFParser(object):
 def main(argv):
     parser = MGFParser()
     try:
-        s = open("temp2.mgf")
+        s = open("temp4.mgf")
     except EOFError:
         pass
     for line in s:
-        print line
-        parser.parse(line)
+        if line != "\r\n" and line != "\n" and line != "\n\r":
+            print line
+            parser.parse(line)
     #~ print parser.content.meta
     #~ print parser.content.ionslist
 

@@ -502,6 +502,16 @@ class MGFParser(object):
         self.content.ionsinfo["title"] = self.content.sentence
         self.content.sentence = ""
         print "TITLE"
+        
+    def p_statement_peak(self, p):
+        '''statement : FLOAT CHAR FLOAT CHAR INT
+                     | FLOAT CHAR FLOAT CHAR CHARGE_VALUE
+                     | FLOAT CHAR FLOAT'''
+        if len(p) == 6:
+            self.content.peaklist.append((p[1], p[3], p[5]))
+        else:
+            self.content.peaklist.append((p[1], p[3], 0))
+        print "PEAK"
     
 #~ option header and local
 
@@ -534,10 +544,9 @@ class MGFParser(object):
         self.content.get_right()["tolu"] = self.content.sentence
         self.content.sentence = ""
         print "TOLU"
-    
-    
 
 #~ NON TERMINAL 
+    
     
     def p_sentence(self, p):
         '''sentence : CHAR
@@ -584,6 +593,7 @@ def main(argv):
         parser.parse(line)
     print parser.content.meta
     print parser.content.ionsinfo
+    print parser.content.peaklist
 
 if __name__ == '__main__':
     main(sys.argv)

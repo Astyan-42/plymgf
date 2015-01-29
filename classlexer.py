@@ -262,7 +262,7 @@ class MGFLexer(object):
         r"[^,=]"
         return t
     
-    t_ignore = '\n'
+    t_ignore = '\n\r'
 
     def t_error(self, t):
         print "ERROR"
@@ -667,8 +667,8 @@ def main(argv):
     for line in s:
         print line
         parser.parse(line)
-    print parser.content.meta
-    print parser.content.ionslist
+    #~ print parser.content.meta
+    #~ print parser.content.ionslist
 
 if __name__ == '__main__':
     main(sys.argv)

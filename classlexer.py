@@ -16,7 +16,7 @@ class Content(object):
         self.ionslist = []
         self.ionsinfo = {}
         self.peaklist = []
-        self.inions = 0 # to put at -1 when finish 
+        self.inions = -1 # to put at -1 when finish 
         
     def get_right(self):
         if self.inions == -1:
@@ -456,12 +456,16 @@ class MGFParser(object):
         
     def p_statement_begin_ions(self, p):
         '''statement : BEGIN CHAR IONS'''
-        self.content.meta["begin_ions"] = "ok"
+        self.content.inions = 1
         print "BEGIN_IONS"
         
     def p_statement_end_ions(self, p):
         '''statement : END CHAR IONS'''
-        self.content.meta["end_ions"] = "ok"
+        self.content.ionsinfo['peaklist'] = self.content.peaklist
+        self.content.ionslist.append(self.content.ionsinfo)
+        self.content.peaklist = []
+        self.content.ionsinfo = {}
+        self.content.inions = -1
         print "END_IONS"
     
 #~ option only local
@@ -614,8 +618,7 @@ def main(argv):
         print line
         parser.parse(line)
     print parser.content.meta
-    print parser.content.ionsinfo
-    print parser.content.peaklist
+    print parser.content.ionslist
 
 if __name__ == '__main__':
     main(sys.argv)

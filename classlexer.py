@@ -7,8 +7,8 @@ import sys
 import re
 import logging
 
-#~ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+#~ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 class Content(object):
@@ -698,7 +698,8 @@ def read_mgf(file_path):
     'ions' : parser.content.ionslist}
 
 def main(argv):
-    read_mgf("temp8.mgf")
+    pass
+    #~ print read_mgf("temp8.mgf")
 
 if __name__ == '__main__':
     main(sys.argv)

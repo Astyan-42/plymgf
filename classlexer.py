@@ -4,9 +4,12 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 import sys
+import re
 import logging
 
-logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+#~ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+
 
 class Content(object):
     
@@ -687,7 +690,7 @@ def read_mgf(file_path):
     except EOFError:
         pass
     for line in s:
-        if line != "\r\n" and line != "\n" and line != "\n\r":
+        if not re.match(r'(\n|\r)+', line):
             logging.debug("---------------")
             logging.debug(line)
             parser.parse(line)
@@ -695,18 +698,7 @@ def read_mgf(file_path):
     'ions' : parser.content.ionslist}
 
 def main(argv):
-    read_mgf("temp4.mgf")
-    #~ parser = MGFParser()
-    #~ try:
-        #~ s = open("temp8.mgf")
-    #~ except EOFError:
-        #~ pass
-    #~ for line in s:
-        #~ if line != "\r\n" and line != "\n" and line != "\n\r":
-            #~ print line
-            #~ parser.parse(line)
-    #~ print parser.content.meta
-    #~ print parser.content.ionslist
+    read_mgf("temp8.mgf")
 
 if __name__ == '__main__':
     main(sys.argv)

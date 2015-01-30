@@ -4,6 +4,9 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 import sys
+import logging
+
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
 class Content(object):
     
@@ -295,19 +298,20 @@ class MGFParser(object):
             return []
 
     def p_error(self, p):
-        print "ERROR"
-        print "Syntax error at '%s'" % p.value
+        logging.error("Syntax error at '%s'" % p.value)
         exit(1)
 
     def in_header(self):
         if self.content.inions != -1:
-            raise Exception
+            logging.critical("Token header type find in local")
+            exit(2) 
         else:
             return True
     
     def in_local(self):
         if self.content.inions != 1:
-            raise Exception
+            logging.critical("Token local type find in header")
+            exit(2) 
         else:
             return True
 
@@ -315,7 +319,7 @@ class MGFParser(object):
 
     def p_statement_comment(self, p):
         'statement : COMMENT'
-        print "COMMENT"
+        logging.debug("COMMENT")
         pass
 
 #~ TERMINAL 
@@ -326,176 +330,176 @@ class MGFParser(object):
         self.in_header()
         self.content.meta["cle"] = self.content.sentence
         self.content.sentence = ""
-        print "CLE"
+        logging.debug("CLE")
     
     def p_statement_com(self, p):
         'statement : COM EQUAL sentence'
         self.in_header()
         self.content.meta["com"] = self.content.sentence
         self.content.sentence = ""
-        print "COM"
+        logging.debug("COM")
     
     def p_statement_cutout(self, p):
         'statement : CUTOUT EQUAL list'
         self.in_header()
         self.content.meta["cutout"] = self.content.glist
         self.content.glist = []
-        print "CUTOUT"
+        logging.debug("CUTOUT")
     
     def p_statement_db(self, p):
         'statement : DB EQUAL sentence'
         self.in_header()
         self.content.meta["db"] = self.content.sentence
         self.content.sentence = ""
-        print "DB"
+        logging.debug("DB")
     
     def p_statement_decoy(self, p):
         'statement : DECOY EQUAL INT'
         self.in_header()
         self.content.meta["decoy"] = p[3]
         self.content.sentence = ""
-        print "DECOY"
+        logging.debug("DECOY")
     
     def p_statement_errortolerant(self, p):
         'statement : ERRORTOLERANT EQUAL INT'
         self.in_header()
         self.content.meta["errortolerant"] = p[3]
         self.content.sentence = ""
-        print "ERRORTOLERANT"
+        logging.debug("ERRORTOLERANT")
     
     def p_statement_format(self, p):
         'statement : FORMAT EQUAL sentence'
         self.in_header()
         self.content.meta["format"] = self.content.sentence
         self.content.sentence = ""
-        print "FORMAT"
+        logging.debug("FORMAT")
     
     def p_statement_frames(self, p):
         'statement : FRAMES EQUAL list'
         self.in_header()
         self.content.meta["frames"] = self.content.glist
         self.content.glist = []
-        print "FRAMES"
+        logging.debug("FRAMES")
     
     def p_statement_itol(self, p):
         '''statement : ITOL EQUAL INT
                      | ITOL EQUAL FLOAT'''
         self.in_header()
         self.content.meta["itol"] = p[3]
-        print "ITOL"
+        logging.debug("ITOL")
     
     def p_statement_itolu(self, p):
         'statement : ITOLU EQUAL sentence'
         self.in_header()
         self.content.meta["itolu"] = self.content.sentence
         self.content.sentence = ""
-        print "ITOLU"
+        logging.debug("ITOLU")
     
     def p_statement_mass(self, p):
         'statement : MASS EQUAL sentence'
         self.in_header()
         self.content.meta["mass"] = self.content.sentence
         self.content.sentence = ""
-        print "MASS"
+        logging.debug("MASS")
     
     def p_statement_mods(self, p):
         'statement : MODS EQUAL sentence'
         self.in_header()
         self.content.meta["mods"] = self.content.sentence
         self.content.sentence = ""
-        print "MODS"
+        logging.debug("MODS")
         
     def p_statement_multi_site_mods(self, p):
         'statement : MULTI_SITE_MODS EQUAL INT'
         self.in_header()
         self.content.meta["multi_site_mods"] = p[3]
-        print "MULTI_SITE_MODS"
+        logging.debug("MULTI_SITE_MODS")
     
     def p_statement_pep_isotope_error(self, p):
         'statement : PEP_ISOTOPE_ERROR EQUAL INT'
         self.in_header()
         self.content.meta["pep_isotope_error"] = p[3]
-        print "PEP_ISOTOPE_ERROR"
+        logging.debug("PEP_ISOTOPE_ERROR")
     
     def p_statement_pfa(self, p):
         'statement : PFA EQUAL INT'
         self.in_header()
         self.content.meta["pfa"] = p[3]
-        print "PFA"
+        logging.debug("PFA")
     
     def p_statement_precursor(self, p):
         'statement : PRECURSOR EQUAL FLOAT'
         self.in_header()
         self.content.meta["precursor"] = p[3]
-        print "PRECURSOR"
+        logging.debug("PRECURSOR")
     
     def p_statement_quantification(self, p):
         'statement : QUANTITATION EQUAL sentence'
         self.in_header()
         self.content.meta["quantitation"] = self.content.sentence
         self.content.sentence = ""
-        print "QUANTITATION"
+        logging.debug("QUANTITATION")
     
     def p_statement_report(self, p):
         '''statement : REPORT EQUAL AUTO
                      | REPORT EQUAL INT'''
         self.in_header()
         self.content.meta["report"] = p[3]
-        print "REPORT"
+        logging.debug("REPORT")
     
     def p_statement_reptype(self, p):
         '''statement : REPTYPE EQUAL sentence'''
         self.in_header()
         self.content.meta["reptype"] = self.content.sentence
         self.content.sentence = ""
-        print "REPTYPE"
+        logging.debug("REPTYPE")
     
     def p_statement_search(self, p):
         '''statement : SEARCH EQUAL sentence'''
         self.in_header()
         self.content.meta["search"] = self.content.sentence
         self.content.sentence = ""
-        print "SEARCH"
+        logging.debug("SEARCH")
     
     def p_statement_seg(self, p):
         '''statement : SEG EQUAL FLOAT'''
         self.in_header()
         self.content.meta["seg"] = p[3]
-        print "SEG"
+        logging.debug("SEG")
         
     def p_statement_taxonomy(self, p):
         '''statement : TAXONOMY EQUAL sentence'''
         self.in_header()
         self.content.meta["taxonomy"] = self.content.sentence
         self.content.sentence = ""
-        print "TAXONOMY"
+        logging.debug("TAXONOMY")
         
     def p_statement_useremail(self, p):
         '''statement : USEREMAIL EQUAL sentence'''
         self.in_header()
         self.content.meta["email"] = self.content.sentence
         self.content.sentence = ""
-        print "USEREMAIL"
+        logging.debug("USEREMAIL")
     
     def p_statement_username(self, p):
         '''statement : USERNAME EQUAL sentence'''
         self.in_header()
         self.content.meta["username"] = self.content.sentence
         self.content.sentence = ""
-        print "USERNAME"
+        logging.debug("USERNAME")
     
     def p_statement_user(self, p):
         '''statement : USER INT EQUAL sentence'''
         self.in_header()
         self.content.meta["user"+str(p[2])] = self.content.sentence
         self.content.sentence = ""
-        print "USER"+str(p[2])
+        logging.debug("USER"+str(p[2]))
         
     def p_statement_begin_ions(self, p):
         '''statement : BEGIN CHAR IONS'''
         self.in_header()
         self.content.inions = 1
-        print "BEGIN_IONS"
+        logging.debug("BEGIN_IONS")
     
 #~ option only local
 
@@ -507,28 +511,28 @@ class MGFParser(object):
         self.content.peaklist = []
         self.content.ionsinfo = {}
         self.content.inions = -1
-        print "END_IONS"
+        logging.debug("END_IONS")
     
     def p_statement_comp(self, p):
         '''statement : COMP EQUAL sentence'''
         self.in_local()
         self.content.ionsinfo["comp"] = self.content.sentence
         self.content.sentence = ""
-        print "COMP"
+        logging.debug("COMP")
     
     def p_statement_etag(self,p):
         'statement : ETAG EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["etag"] = self.content.sentence
         self.content.sentence = ""
-        print "ETAG"
+        logging.debug("ETAG")
     
     def p_statement_locus(self, p):
         'statement : LOCUS EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["locus"] = self.content.sentence
         self.content.sentence = ""
-        print "LOCUS"
+        logging.debug("LOCUS")
     
     def p_statement_pepmass(self, p):
         '''statement : PEPMASS EQUAL FLOAT
@@ -540,49 +544,49 @@ class MGFParser(object):
             self.content.ionsinfo["pepmass"] = (p[3], p[5])
         else:
             self.content.ionsinfo["pepmass"] = (p[3], -1)
-        print "PEPMASS"
+        logging.debug("PEPMASS")
     
     def p_statement_rawfile(self, p):
         'statement : RAWFILE EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["rawfile"] = self.content.sentence
         self.content.sentence = ""
-        print "RAWFILE"
+        logging.debug("RAWFILE")
         
     def p_statement_rawscans(self, p):
         'statement : RAWSCANS EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["rawscans"] = self.content.sentence
         self.content.sentence = ""
-        print "RAWSCANS"
+        logging.debug("RAWSCANS")
     
     def p_statement_rtinseconds(self, p):
         'statement : RTINSECONDS EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["rtinseconds"] = self.content.sentence
         self.content.sentence = ""
-        print "RTINSECONDS"
+        logging.debug("RTINSECONDS")
     
     def p_statement_seq(self, p):
         'statement : SEQ EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["seq"] = self.content.sentence
         self.content.sentence = ""
-        print "SEQ"
+        logging.debug("SEQ")
     
     def p_statement_tag(self, p):
         'statement : TAG EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["tag"] = self.content.sentence
         self.content.sentence = ""
-        print "TAG"
+        logging.debug("TAG")
         
     def p_statement_title(self, p):
         'statement : TITLE EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["title"] = self.content.sentence
         self.content.sentence = ""
-        print "TITLE"
+        logging.debug("TITLE")
     
     def p_statement_peak_charge(self, p):
         '''statement : FLOAT CHAR FLOAT CHAR INT
@@ -595,7 +599,7 @@ class MGFParser(object):
                      | FLOAT CHAR INT CHAR CHARGE_VALUE CHAR'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], p[5]))
-        print "PEAK"
+        logging.debug("PEAK")
         
     def p_statement_peak_wcharge(self, p):
         '''statement : FLOAT CHAR FLOAT
@@ -604,7 +608,7 @@ class MGFParser(object):
                      | FLOAT CHAR INT CHAR'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], 0))
-        print "PEAK"
+        logging.debug("PEAK")
     
 #~ option header and local
 
@@ -612,31 +616,31 @@ class MGFParser(object):
         'statement : CHARGE EQUAL charges'
         self.content.get_right()["charges"] = self.content.glist
         self.content.glist = []
-        print "CHARGE"
+        logging.debug("CHARGE")
     
     def p_statement_instrument(self, p):
         'statement : INSTRUMENT EQUAL sentence'
         self.content.get_right()["instrument"] = self.content.sentence
         self.content.sentence = ""
-        print "INSTRUMENT"
+        logging.debug("INSTRUMENT")
     
     def p_statement_it_mods(self, p):
         'statement : IT_MODS EQUAL sentence'
         self.content.get_right()["it_mods"] = self.content.sentence
         self.content.sentence = ""
-        print "IT_MODS"
+        logging.debug("IT_MODS")
     
     def p_statement_tol(self, p):
         '''statement : TOL EQUAL INT
                      | TOL EQUAL FLOAT'''
         self.content.get_right()["tol"] = p[3]
-        print "TOL"
+        logging.debug("TOL")
     
     def p_statement_tolu(self, p):
         'statement : TOLU EQUAL sentence'
         self.content.get_right()["tolu"] = self.content.sentence
         self.content.sentence = ""
-        print "TOLU"
+        logging.debug("TOLU")
 
 #~ NON TERMINAL 
     
@@ -657,7 +661,7 @@ class MGFParser(object):
                     | COMMA sentence
                     | CHARGE_VALUE sentence '''
         self.content.sentence = str(p[1]) + self.content.sentence
-        print "sentence"
+        logging.debug("sentence")
         
     def p_charges(self, p):
         """charges : CHARGE_VALUE
@@ -667,24 +671,40 @@ class MGFParser(object):
                    | INT CHAR AND CHAR charges
                    | INT COMMA CHAR charges"""
         self.content.glist.append(p[1])
-        print "charges"
+        logging.debug("charges")
     
     def p_list(self, p):
         '''list : INT COMMA list
                 | INT'''
         self.content.glist.append(p[1])
-        print "LIST"
+        logging.debug("list")
         
-def main(argv):
+        
+def read_mgf(file_path):
     parser = MGFParser()
     try:
-        s = open("temp8.mgf")
+        s = open(file_path)
     except EOFError:
         pass
     for line in s:
         if line != "\r\n" and line != "\n" and line != "\n\r":
-            print line
+            logging.debug("---------------")
+            logging.debug(line)
             parser.parse(line)
+    return {'meta' : parser.content.meta,
+    'ions' : parser.content.ionslist}
+
+def main(argv):
+    read_mgf("temp4.mgf")
+    #~ parser = MGFParser()
+    #~ try:
+        #~ s = open("temp8.mgf")
+    #~ except EOFError:
+        #~ pass
+    #~ for line in s:
+        #~ if line != "\r\n" and line != "\n" and line != "\n\r":
+            #~ print line
+            #~ parser.parse(line)
     #~ print parser.content.meta
     #~ print parser.content.ionslist
 

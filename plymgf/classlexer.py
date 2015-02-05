@@ -3,7 +3,7 @@
 # pylint: disable=unused-argument
 """classlexer.py is a parser for mgf files 
 @author: Vezin Aurelien
-@license: CECILL-B"""
+@license: CeCILL-B"""
 
 import ply.lex as lex
 import ply.yacc as yacc

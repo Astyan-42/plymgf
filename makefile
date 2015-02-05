@@ -11,5 +11,6 @@ clean:
 	rm -f plymgf/*.pyc
 	rm -f plymfg/*.out
 	rm -f plymgf/parsetab.py
+	rm -f *.out
 pylint:
 	pylint `python .script/allpath.py`

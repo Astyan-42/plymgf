@@ -3,7 +3,7 @@
 # pylint: disable=too-many-public-methods
 """test_classlexer.py is units test for classlexer
 @author: Vezin Aurelien
-@license: CECILL-B"""
+@license: CeCILL-B"""
 
 import unittest
 import os

@@ -1,13 +1,9 @@
-A sample Python project
+A MGF parser
 =======================
 
-This is the description file for the project.
+This project allow you to read MGF files.
+To read a MGF File use the function read_mgf(path).
+This function will be return a dict with all informations.
 
-The file should use UTF-8 encoding and be written using ReStructured Text. It
-will be used to generate the project webpage on PyPI, and should be written for
-that purpose.
-
-Typical contents for this file would include an overview of the project, basic
-usage examples, etc. Generally, including the project changelog in here is not
-a good idea, although a simple "What's New" section for the most recent version
-may be appropriate.
+If you have a problem to parse a MGF file please send it to me on the 
+email : aurelien.vezin at etu.unistra.fr 

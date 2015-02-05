@@ -7,6 +7,9 @@ open:
 doc:
 	epydoc --html --name "PLYMGF" -v -o doc `python .script/allpath.py`
 clean:
+	rm -rf build
+	rm -rf dist
+	rm -rf plymgf.egg-info
 	rm -rf doc
 	rm -f plymgf/*.pyc
 	rm -f plymfg/*.out

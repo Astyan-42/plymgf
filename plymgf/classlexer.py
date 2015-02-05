@@ -8,7 +8,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-import os
 import sys
 import re
 import logging
@@ -307,8 +306,7 @@ class MGFLexer(object):
     def t_error(self, t):
         """ method used to print the value of the token when there is
         a error"""
-        print "ERROR"
-        print "Illegal character '%s'" % t.value[0]
+        logging.error("Illegal character '%s'", t.value[0])
         t.lexer.skip(1)
         
 
@@ -323,24 +321,45 @@ class MGFLexer(object):
                 break
 
 class MGFParser(object):
+    """ class use to parse the mgf file 
+    @ivar lexer: a lexer
+    @type lexer: a MGFLexer class
+    @ivar content: use to stock all data get from the mgf file
+    @type content: a Content class
+    @ivar tokens: a list of token get from the lexer class
+    @type tokens: list(string)
+    @ivar parser: the parser
+    @type parser: a class/method get from the ply module"""
+    
     
     def __init__(self):
+        """init of all class var"""
         self.lexer = MGFLexer()
         self.content = Content()
         self.tokens = self.lexer.tokens
         self.parser = yacc.yacc(module=self, write_tables=0, debug=True)
 
     def parse(self, data):
+        """method use to parse a line
+        @param data: a line of the file
+        @type data: string
+        @return: a list with the result of the parsing
+        @rtype: list(any)"""
         if data:
             return self.parser.parse(data, self.lexer.lexer, 0, 0, None)
         else:
             return []
 
     def p_error(self, p):
-        logging.error("Syntax error at '%s'" % p.value)
+        """ this method to print an error when there is a syntax error
+        @param p: the token
+        @type p: token"""
+        logging.error("Syntax error at '%s'", p.value)
         exit(1)
 
     def in_header(self):
+        """this method check if it's in the header sectionand make 
+        an error if not"""
         if self.content.inions != -1:
             logging.critical("Token header type find in local")
             exit(2) 
@@ -348,6 +367,8 @@ class MGFParser(object):
             return True
     
     def in_local(self):
+        """this method check if it's in the local section and 
+        make an error if not"""
         if self.content.inions != 1:
             logging.critical("Token local type find in header")
             exit(2) 
@@ -721,6 +742,13 @@ class MGFParser(object):
         
         
 def read_mgf(file_path):
+    """read the mgf file and parse it
+    @param file_path: the path to the mgf file
+    @type file_path: string
+    @return: the full data of the mgf file in a dict, with the metadata
+    and the ions data
+    @rtype: dict(string: dict|list)
+    """
     parser = MGFParser()
     try:
         s = open(file_path)
@@ -734,8 +762,5 @@ def read_mgf(file_path):
     return {'meta' : parser.content.meta,
     'ions' : parser.content.ionslist}
 
-def main(argv):
-    print read_mgf(os.path.join(".", "plymgf", "files", "test.mgf"))
-
 if __name__ == '__main__':
-    main(sys.argv)
+    print read_mgf(sys.argv[1])

@@ -14,11 +14,14 @@ class TestReadMGF(unittest.TestCase):
     """Class to test read_mgf function"""
     
     def setUp(self):
+        """Run before each tests"""
         pass
     
     def tearDown(self):
+        """Clear after each tests"""
         pass
     
     def test_10_read_mgf(self):
+        """ test function of read_mgf"""
         res = read_mgf(os.path.join(".", "plymgf", "files", "test.mgf"))
         

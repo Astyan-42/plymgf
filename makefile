@@ -1,5 +1,5 @@
 run:
-	python plymgf/classlexer.py
+	python plymgf/classlexer.py ./plymgf/files/test.mgf
 test:
 	python -m unittest discover plymgf
 open:

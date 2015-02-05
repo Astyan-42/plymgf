@@ -7,8 +7,9 @@
 
 import unittest
 import os
+import sys
 
-from classlexer import read_mgf
+from plymgf.classlexer import read_mgf
 
 class TestReadMGF(unittest.TestCase):
     """Class to test read_mgf function"""
@@ -23,5 +24,8 @@ class TestReadMGF(unittest.TestCase):
     
     def test_10_read_mgf(self):
         """ test function of read_mgf"""
-        res = read_mgf(os.path.join(".", "plymgf", "files", "test.mgf"))
-        
+        res = read_mgf(os.path.join(".", "testu", "data", "test.mgf"))
+         
+if __name__ == '__main__':
+    unittest.main()
+

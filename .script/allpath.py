@@ -5,7 +5,7 @@ import os
 lpath = []
 slpath = ""
 
-for osdir in os.walk("plymgf"):
+for osdir in os.walk("."):
     for fich in osdir[2]:
         if fich.split('.')[-1] == "py":
             lpath.append(osdir[0])

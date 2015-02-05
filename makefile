@@ -1,5 +1,5 @@
 run:
-	python plymgf/classlexer.py ./data/test.mgf
+	python plymgf/classlexer.py ./testu/data/test.mgf
 test:
 	python -m unittest discover testu
 open:
@@ -15,5 +15,9 @@ clean:
 	rm -f plymfg/*.out
 	rm -f plymgf/parsetab.py
 	rm -f *.out
+develop:
+	python setup.py develop
+sourcedist:
+	python setup.py sdist
 pylint:
 	pylint `python .script/allpath.py`

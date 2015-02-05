@@ -1,6 +1,8 @@
 run:
-	python classlexer.py
+	python plymgf/classlexer.py
 clean:
-	rm -f *.pyc
-	rm -f *.out
-	rm -f parsetab.py
+	rm -f plymgf/*.pyc
+	rm -f plymfg/*.out
+	rm -f plymgf/parsetab.py
+test:
+	python -m unittest discover plymgf

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
+"""classlexer.py is a parser for mgf files 
+@author: Vezin Aurelien
+@license: CECILL-B"""
+
 import ply.lex as lex
 import ply.yacc as yacc
 
@@ -701,7 +705,7 @@ def read_mgf(file_path):
     'ions' : parser.content.ionslist}
 
 def main(argv):
-    print read_mgf(os.path.join(".","files","test.mgf"))
+    print read_mgf(os.path.join(".", "plymgf", "files", "test.mgf"))
 
 if __name__ == '__main__':
     main(sys.argv)

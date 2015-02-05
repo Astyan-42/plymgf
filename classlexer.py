@@ -3,6 +3,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
+import os
 import sys
 import re
 import logging
@@ -499,7 +500,8 @@ class MGFParser(object):
         logging.debug("USER"+str(p[2]))
         
     def p_statement_begin_ions(self, p):
-        '''statement : BEGIN CHAR IONS'''
+        '''statement : BEGIN CHAR IONS
+                     | BEGIN CHAR IONS CHAR'''
         self.in_header()
         self.content.inions = 1
         logging.debug("BEGIN_IONS")
@@ -507,7 +509,8 @@ class MGFParser(object):
 #~ option only local
 
     def p_statement_end_ions(self, p):
-        '''statement : END CHAR IONS'''
+        '''statement : END CHAR IONS
+                     | END CHAR IONS CHAR'''
         self.in_local()
         self.content.ionsinfo['peaklist'] = self.content.peaklist
         self.content.ionslist.append(self.content.ionsinfo)
@@ -698,8 +701,7 @@ def read_mgf(file_path):
     'ions' : parser.content.ionslist}
 
 def main(argv):
-    pass
-    #~ print read_mgf("temp8.mgf")
+    print read_mgf(os.path.join(".","files","test.mgf"))
 
 if __name__ == '__main__':
     main(sys.argv)

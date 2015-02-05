@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
+# pylint: disable=unused-argument
 """classlexer.py is a parser for mgf files 
 @author: Vezin Aurelien
 @license: CECILL-B"""
@@ -17,19 +18,44 @@ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
 
 class Content(object):
+    """This class store the content of the mgf file
+    @ivar sentence: is use like a buffer to store sentences find in
+    the mgf file
+    @type sentence: string
+    @ivar glist: is use like a buffer to store charges data
+    @type glist: list(string|int)
+    @ivar meta: is use to store all data find in the meta section of
+    mgf file
+    @type meta: dict(string : any)
+    @ivar ionslist: contain peak list and data link to peak
+    @type ionslist: list(dict(string : any))
+    @ivar ionsinfo: is used like a buffer to store ions data except 
+    peaks list
+    @type ionsinfo: dict(string : any)
+    @ivar peaklist: contain the list of peak with mass, intensity,
+    charge foreach peak
+    @type peaklist: list((float, int/float, int/string/empty))
+    @ivar inions: is use to know if we are in metadata or in a 
+    ions (-1 in metadata, 1 in ions)
+    @type inions: int
+    """
     
     def __init__(self):
+        """Init of every class param"""
         self.sentence = ""
         self.glist = []
         
         self.meta = {}
-        
-        self.ionslist = []
         self.ionsinfo = {}
         self.peaklist = []
+        
+        self.ionslist = []
         self.inions = -1 # to put at -1 when finish 
         
     def get_right(self):
+        """ get the right dict to write in (metadata or ions)
+        @return: the right dict (meta or ionsinfo)
+        @rtype: dict(string : any)"""
         if self.inions == -1:
             return self.meta
         else:
@@ -37,6 +63,9 @@ class Content(object):
         
 
 class MGFLexer(object):
+    """Class use to create all token
+    @ivar lexer: the lexer
+    @type lexer: a class/method ? from the plymgf parser"""
     
     def __init__(self):
         self.lexer = lex.lex(module=self)
@@ -50,7 +79,7 @@ class MGFLexer(object):
     'USEREMAIL', 'USERNAME', 'USER', 'BEGIN', 'END', 'IONS']
     head_local_tokens = ['CHARGE', 'INSTRUMENT', 'IT_MODS', 'TOLU',
     'TOL']
-    other_tokens = ['EQUAL', 'COMMA',  'CHAR', 'INT', 'FLOAT', 
+    other_tokens = ['EQUAL', 'COMMA', 'CHAR', 'INT', 'FLOAT', 
     'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
     
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
@@ -276,6 +305,8 @@ class MGFLexer(object):
     t_ignore = '\n\r'
 
     def t_error(self, t):
+        """ method used to print the value of the token when there is
+        a error"""
         print "ERROR"
         print "Illegal character '%s'" % t.value[0]
         t.lexer.skip(1)
@@ -297,11 +328,11 @@ class MGFParser(object):
         self.lexer = MGFLexer()
         self.content = Content()
         self.tokens = self.lexer.tokens
-        self.parser = yacc.yacc(module=self,write_tables=0,debug=True)
+        self.parser = yacc.yacc(module=self, write_tables=0, debug=True)
 
-    def parse(self,data):
+    def parse(self, data):
         if data:
-            return self.parser.parse(data,self.lexer.lexer,0,0,None)
+            return self.parser.parse(data, self.lexer.lexer, 0, 0, None)
         else:
             return []
 
@@ -328,7 +359,6 @@ class MGFParser(object):
     def p_statement_comment(self, p):
         'statement : COMMENT'
         logging.debug("COMMENT")
-        pass
 
 #~ TERMINAL 
 
@@ -530,7 +560,7 @@ class MGFParser(object):
         self.content.sentence = ""
         logging.debug("COMP")
     
-    def p_statement_etag(self,p):
+    def p_statement_etag(self, p):
         'statement : ETAG EQUAL sentence'
         self.in_local()
         self.content.ionsinfo["etag"] = self.content.sentence

@@ -15,9 +15,11 @@ clean:
 	rm -f plymfg/*.out
 	rm -f plymgf/parsetab.py
 	rm -f *.out
+pylint:
+	pylint `python .script/allpath.py`
 develop:
 	python setup.py develop
 sourcedist:
 	python setup.py sdist
-pylint:
-	pylint `python .script/allpath.py`
+register:
+	python setup.py register sdist upload

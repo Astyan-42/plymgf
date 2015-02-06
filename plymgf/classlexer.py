@@ -70,16 +70,18 @@ class MGFLexer(object):
         self.lexer = lex.lex(module=self)
     
     local_tokens = ['COMP', 'ETAG', 'LOCUS', 'PEPMASS', 'RAWFILE',
-    'RAWSCANS', 'RTINSECONDS', 'SEQ', 'TAG', 'TITLE']
+                    'RAWSCANS', 'RTINSECONDS', 'SEQ', 'TAG', 'TITLE']
     head_tokens = ['CLE', 'COM', 'CUTOUT', 'DB', 'DECOY',
-    'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL', 'MASS', 
-    'MODS', 'MULTI_SITE_MODS', 'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
-    'QUANTITATION', 'REPORT', 'REPTYPE', 'SEARCH', 'SEG', 'TAXONOMY',
-    'USEREMAIL', 'USERNAME', 'USER', 'BEGIN', 'END', 'IONS']
+                   'ERRORTOLERANT', 'FORMAT', 'FRAMES', 'ITOLU', 'ITOL',
+                   'MASS', 'MODS', 'MULTI_SITE_MODS', 
+                   'PEP_ISOTOPE_ERROR', 'PFA', 'PRECURSOR',
+                   'QUANTITATION', 'REPORT', 'REPTYPE', 'SEARCH',
+                   'SEG', 'TAXONOMY', 'USEREMAIL', 'USERNAME', 'USER',
+                   'BEGIN', 'END', 'IONS']
     head_local_tokens = ['CHARGE', 'INSTRUMENT', 'IT_MODS', 'TOLU',
-    'TOL']
+                         'TOL']
     other_tokens = ['EQUAL', 'COMMA', 'CHAR', 'INT', 'FLOAT', 
-    'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
+                    'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
     
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
 
@@ -760,7 +762,7 @@ def read_mgf(file_path):
             logging.debug(line)
             parser.parse(line)
     return {'meta' : parser.content.meta,
-    'ions' : parser.content.ionslist}
+            'ions' : parser.content.ionslist}
 
 if __name__ == '__main__':
     print read_mgf(sys.argv[1])

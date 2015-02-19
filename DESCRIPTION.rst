@@ -11,13 +11,13 @@ have a feature request please send it to me at : aurelien.vezin at etu.unistra.f
 it's use like :
 
 from plymgf.mgfreader import MGFReader
-res = MGFReader('path_to_your_file.mgf')
+|br|res = MGFReader('path_to_your_file.mgf')
 
 To have the same behaviour than in previous versions do
 
 data = res.get_raw_data()
 
-You can get some metadata with the methods:
++You can get some metadata with the methods:
 -get_cle
 -get_accession
 -get_itol

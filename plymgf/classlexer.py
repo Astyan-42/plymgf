@@ -636,10 +636,10 @@ class MGFParser(object):
         logging.debug("RAWSCANS")
     
     def p_statement_rtinseconds(self, p):
-        'statement : RTINSECONDS EQUAL sentence'
+        '''statement : RTINSECONDS EQUAL INT
+                     | RTINSECONDS EQUAL FLOAT'''
         self.in_local()
-        self.content.ionsinfo["rtinseconds"] = self.content.sentence
-        self.content.sentence = ""
+        self.content.ionsinfo["rtinseconds"] = p[3]
         logging.debug("RTINSECONDS")
     
     def p_statement_seq(self, p):

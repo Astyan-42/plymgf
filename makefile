@@ -20,13 +20,9 @@ clean:
 pylint:
 	pylint `python .script/allpath.py`
 develop:
-	mv testu tests
 	python setup.py develop
-	mv tests testu
 sourcedist:
-	mv testu tests
 	python setup.py sdist
-	mv tests testu
 register:
 	mv testu tests
 	python setup.py register sdist upload

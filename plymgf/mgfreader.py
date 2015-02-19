@@ -5,10 +5,11 @@
 @license: CeCILL-B"""
 
 import sys
-from classlexer import read_mgf
+sys.path.append('../')
+from plymgf.classlexer import read_mgf
 
 
-class MGFReader:
+class MGFReader(object):
     """ This class is use to read an MGF File 
     @ivar data: the data from the parser
     @type data: dict(string: list(dict(string: any)) | 
@@ -90,6 +91,7 @@ class MGFReader:
         """go to the next ion"""
         if len(self._data["ions"]) > self._ions + 1:
             self._ions = self._ions + 1
+            return 0
         else:
             return 1
     

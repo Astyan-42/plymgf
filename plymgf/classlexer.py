@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument, no-self-use
 """classlexer.py is a parser for mgf files 
 @author: Vezin Aurelien
 @license: CeCILL-B"""

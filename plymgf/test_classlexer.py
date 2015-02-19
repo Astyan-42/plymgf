@@ -24,7 +24,7 @@ class TestReadMGF(unittest.TestCase):
     
     def test_10_read_mgf(self):
         """ test function of read_mgf"""
-        res = read_mgf(os.path.join(".", "testu", "data", "test.mgf"))
+        res = read_mgf(os.path.join(".", "plymgf", "data", "test.mgf"))
          
 if __name__ == '__main__':
     unittest.main()

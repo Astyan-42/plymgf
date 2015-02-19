@@ -1,9 +1,9 @@
 run:
-	python plymgf/classlexer.py ./testu/data/test.mgf
+	python plymgf/classlexer.py ./plymgf/data/test.mgf
 runreader:
-	python plymgf/mgfreader.py ./testu/data/test.mgf
+	python plymgf/mgfreader.py ./plymgf/data/test.mgf
 test:
-	python -m unittest discover testu
+	python -m unittest discover plymgf
 open:
 	geany `python .script/allpath.py` &
 doc:

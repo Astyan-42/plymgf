@@ -25,6 +25,9 @@ class TestReadMGF(unittest.TestCase):
     def test_10_read_mgf(self):
         """ test function of read_mgf"""
         res = read_mgf(os.path.join(".", "plymgf", "data", "test.mgf"))
+        self.assertEqual(res["meta"],  {'charges': [3, 2, 1]})
+        self.assertEqual(res["ions"][2]["rtinseconds"], 603)
+        self.assertEqual(res["ions"][3]["charges"], [3])
          
 if __name__ == '__main__':
     unittest.main()

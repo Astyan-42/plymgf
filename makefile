@@ -24,6 +24,4 @@ develop:
 sourcedist:
 	python setup.py sdist
 register:
-	mv testu tests
 	python setup.py register sdist upload
-	mv tests testu

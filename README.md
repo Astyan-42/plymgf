@@ -16,7 +16,7 @@ it's use like :
 
 To have the same behaviour than in previous versions do
 
-data = res.get_raw_data()
+    data = res.get_raw_data()
 
 You can get some metadata with the methods:
  - get_cle 

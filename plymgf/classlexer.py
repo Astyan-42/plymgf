@@ -16,6 +16,18 @@ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 #~ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
+def convert_charge(charge):
+    """ convert a charge of type 1+ 1- to a int 
+    @param charge: a charge of type 1+, 1-
+    @type charge: str
+    @return: the charge in integer
+    @rtype: int"""
+    if charge[-1] == "+":
+        return int(charge[:-1])
+    if charge[-1] == "-":
+        return -int(charge[:-1])
+    
+
 class Content(object):
     """This class store the content of the mgf file
     @ivar sentence: is use like a buffer to store sentences find in
@@ -651,15 +663,21 @@ class MGFParser(object):
         self.content.sentence = ""
         logging.debug("TITLE")
     
-    def p_statement_peak_charge(self, p):
-        '''statement : FLOAT CHAR FLOAT CHAR INT
-                     | FLOAT CHAR FLOAT CHAR INT CHAR
-                     | FLOAT CHAR FLOAT CHAR CHARGE_VALUE
+    
+    def p_statement_peak_charge_value(self, p):
+        '''statement : FLOAT CHAR FLOAT CHAR CHARGE_VALUE
                      | FLOAT CHAR FLOAT CHAR CHARGE_VALUE CHAR
-                     | FLOAT CHAR INT CHAR INT
-                     | FLOAT CHAR INT CHAR INT CHAR
                      | FLOAT CHAR INT CHAR CHARGE_VALUE
                      | FLOAT CHAR INT CHAR CHARGE_VALUE CHAR'''
+        self.in_local()
+        self.content.peaklist.append((p[1], p[3], convert_charge(p[5])))
+        logging.debug("PEAK")
+    
+    def p_statement_peak_charge_int(self, p):
+        '''statement : FLOAT CHAR FLOAT CHAR INT
+                     | FLOAT CHAR FLOAT CHAR INT CHAR
+                     | FLOAT CHAR INT CHAR INT
+                     | FLOAT CHAR INT CHAR INT CHAR'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], p[5]))
         logging.debug("PEAK")
@@ -725,15 +743,19 @@ class MGFParser(object):
                     | CHARGE_VALUE sentence '''
         self.content.sentence = str(p[1]) + self.content.sentence
         logging.debug("sentence")
-        
-    def p_charges(self, p):
-        """charges : CHARGE_VALUE
-                   | CHARGE_VALUE CHAR AND CHAR charges
-                   | CHARGE_VALUE COMMA CHAR charges
-                   | INT
+    
+    def p_charges_int(self, p):
+        """charges : INT
                    | INT CHAR AND CHAR charges
                    | INT COMMA CHAR charges"""
         self.content.glist.append(p[1])
+        logging.debug("charges")
+    
+    def p_charges_value(self, p):
+        """charges : CHARGE_VALUE
+                   | CHARGE_VALUE CHAR AND CHAR charges
+                   | CHARGE_VALUE COMMA CHAR charges"""
+        self.content.glist.append(convert_charge(p[1]))
         logging.debug("charges")
     
     def p_list(self, p):

@@ -1,5 +1,7 @@
 run:
 	python plymgf/classlexer.py ./testu/data/test.mgf
+runreader:
+	python plymgf/mgfreader.py ./testu/data/test.mgf
 test:
 	python -m unittest discover testu
 open:

@@ -613,7 +613,8 @@ class MGFParser(object):
         '''statement : PEPMASS EQUAL FLOAT
                      | PEPMASS EQUAL FLOAT CHAR INT
                      | PEPMASS EQUAL FLOAT CHAR
-                     | PEPMASS EQUAL FLOAT CHAR INT FLOAT'''
+                     | PEPMASS EQUAL FLOAT CHAR INT FLOAT
+                     | PEPMASS EQUAL FLOAT CHAR FLOAT'''
         self.in_local()
         if len(p) >= 6:
             self.content.ionsinfo["pepmass"] = (p[3], p[5])

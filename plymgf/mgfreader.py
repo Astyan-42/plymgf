@@ -8,6 +8,8 @@ import sys
 sys.path.append('../')
 from plymgf.classlexer import read_mgf
 
+class PlyMGFException(Exception):
+    pass
 
 class MGFReader(object):
     """ This class is use to read an MGF File 
@@ -94,6 +96,16 @@ class MGFReader(object):
             return 0
         else:
             return 1
+    
+    def set_ion(self, nb):
+        """ set the ion parameter at nb
+        @param nb: the ion number we want
+        @type nb: int
+        """
+        if len(self._data["ions"]) > nb:
+            self._ions = nb
+        else:
+            raise PlyMGFException("Ion out of range")
     
     def get_ion_charge(self):
         """return the charge of the ion

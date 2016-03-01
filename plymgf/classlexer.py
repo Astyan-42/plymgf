@@ -12,8 +12,8 @@ import sys
 import re
 import logging
 
-logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
-#~ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+#~ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 def convert_charge(charge):
@@ -93,7 +93,7 @@ class MGFLexer(object):
     head_local_tokens = ['CHARGE', 'INSTRUMENT', 'IT_MODS', 'TOLU',
                          'TOL']
     other_tokens = ['EQUAL', 'COMMA', 'CHAR', 'INT', 'FLOAT', 
-                    'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE']
+                    'COMMENT', 'AND', 'AUTO', 'CHARGE_VALUE', "SPACE"]
     
     tokens = head_tokens+local_tokens+head_local_tokens+other_tokens
 
@@ -309,6 +309,10 @@ class MGFLexer(object):
     
     def t_AUTO(self, t):
         r"AUTO"
+        return t
+    
+    def t_SPACE(self, t):
+        r"[\t\s]"
         return t
     
     def t_CHAR(self, t):
@@ -569,8 +573,8 @@ class MGFParser(object):
         logging.debug("USER"+str(p[2]))
         
     def p_statement_begin_ions(self, p):
-        '''statement : BEGIN CHAR IONS
-                     | BEGIN CHAR IONS CHAR'''
+        '''statement : BEGIN SPACE IONS
+                     | BEGIN SPACE IONS SPACE'''
         self.in_header()
         self.content.inions = 1
         logging.debug("BEGIN_IONS")
@@ -578,8 +582,8 @@ class MGFParser(object):
 #~ option only local
 
     def p_statement_end_ions(self, p):
-        '''statement : END CHAR IONS
-                     | END CHAR IONS CHAR'''
+        '''statement : END SPACE IONS
+                     | END SPACE IONS SPACE'''
         self.in_local()
         self.content.ionsinfo['peaklist'] = self.content.peaklist
         self.content.ionslist.append(self.content.ionsinfo)
@@ -611,10 +615,9 @@ class MGFParser(object):
     
     def p_statement_pepmass(self, p):
         '''statement : PEPMASS EQUAL FLOAT
-                     | PEPMASS EQUAL FLOAT CHAR INT
-                     | PEPMASS EQUAL FLOAT CHAR
-                     | PEPMASS EQUAL FLOAT CHAR INT FLOAT
-                     | PEPMASS EQUAL FLOAT CHAR FLOAT'''
+                     | PEPMASS EQUAL FLOAT SPACE INT
+                     | PEPMASS EQUAL FLOAT SPACE
+                     | PEPMASS EQUAL FLOAT SPACE FLOAT'''
         self.in_local()
         if len(p) >= 6:
             self.content.ionsinfo["pepmass"] = (p[3], p[5])
@@ -666,28 +669,29 @@ class MGFParser(object):
     
     
     def p_statement_peak_charge_value(self, p):
-        '''statement : FLOAT CHAR FLOAT CHAR CHARGE_VALUE
-                     | FLOAT CHAR FLOAT CHAR CHARGE_VALUE CHAR
-                     | FLOAT CHAR INT CHAR CHARGE_VALUE
-                     | FLOAT CHAR INT CHAR CHARGE_VALUE CHAR'''
+        '''statement : FLOAT SPACE FLOAT SPACE CHARGE_VALUE
+                     | FLOAT SPACE FLOAT SPACE CHARGE_VALUE SPACE
+                     | FLOAT SPACE INT SPACE CHARGE_VALUE
+                     | FLOAT SPACE INT SPACE CHARGE_VALUE SPACE
+                     '''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], convert_charge(p[5])))
         logging.debug("PEAK")
     
     def p_statement_peak_charge_int(self, p):
-        '''statement : FLOAT CHAR FLOAT CHAR INT
-                     | FLOAT CHAR FLOAT CHAR INT CHAR
-                     | FLOAT CHAR INT CHAR INT
-                     | FLOAT CHAR INT CHAR INT CHAR'''
+        '''statement : FLOAT SPACE FLOAT SPACE INT
+                     | FLOAT SPACE FLOAT SPACE INT SPACE
+                     | FLOAT SPACE INT SPACE INT
+                     | FLOAT SPACE INT SPACE INT SPACE'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], p[5]))
         logging.debug("PEAK")
         
     def p_statement_peak_wcharge(self, p):
-        '''statement : FLOAT CHAR FLOAT
-                     | FLOAT CHAR FLOAT CHAR
-                     | FLOAT CHAR INT
-                     | FLOAT CHAR INT CHAR'''
+        '''statement : FLOAT SPACE FLOAT
+                     | FLOAT SPACE FLOAT SPACE
+                     | FLOAT SPACE INT
+                     | FLOAT SPACE INT SPACE'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], 0))
         logging.debug("PEAK")
@@ -734,6 +738,7 @@ class MGFParser(object):
                     | AND
                     | EQUAL
                     | COMMA
+                    | SPACE
                     | CHARGE_VALUE
                     | CHAR sentence
                     | INT sentence
@@ -741,21 +746,22 @@ class MGFParser(object):
                     | AND sentence
                     | EQUAL sentence
                     | COMMA sentence
-                    | CHARGE_VALUE sentence '''
+                    | CHARGE_VALUE sentence
+                    | SPACE sentence '''
         self.content.sentence = str(p[1]) + self.content.sentence
         logging.debug("sentence")
     
     def p_charges_int(self, p):
         """charges : INT
-                   | INT CHAR AND CHAR charges
-                   | INT COMMA CHAR charges"""
+                   | INT SPACE AND SPACE charges
+                   | INT COMMA SPACE charges"""
         self.content.glist.append(p[1])
         logging.debug("charges")
     
     def p_charges_value(self, p):
         """charges : CHARGE_VALUE
-                   | CHARGE_VALUE CHAR AND CHAR charges
-                   | CHARGE_VALUE COMMA CHAR charges"""
+                   | CHARGE_VALUE SPACE AND SPACE charges
+                   | CHARGE_VALUE COMMA SPACE charges"""
         self.content.glist.append(convert_charge(p[1]))
         logging.debug("charges")
     

@@ -12,8 +12,8 @@ import sys
 import re
 import logging
 
-#~ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+#~ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 def convert_charge(charge):
@@ -615,9 +615,11 @@ class MGFParser(object):
     
     def p_statement_pepmass(self, p):
         '''statement : PEPMASS EQUAL FLOAT
-                     | PEPMASS EQUAL FLOAT SPACE INT
-                     | PEPMASS EQUAL FLOAT SPACE
-                     | PEPMASS EQUAL FLOAT SPACE FLOAT'''
+                     | PEPMASS EQUAL FLOAT spaces INT
+                     | PEPMASS EQUAL FLOAT spaces
+                     | PEPMASS EQUAL FLOAT spaces FLOAT
+                     | PEPMASS EQUAL FLOAT spaces INT spaces
+                     | PEPMASS EQUAL FLOAT spaces FLOAT spaces'''
         self.in_local()
         if len(p) >= 6:
             self.content.ionsinfo["pepmass"] = (p[3], p[5])
@@ -669,10 +671,10 @@ class MGFParser(object):
     
     
     def p_statement_peak_charge_value(self, p):
-        '''statement : FLOAT SPACE FLOAT SPACE CHARGE_VALUE
-                     | FLOAT SPACE FLOAT SPACE CHARGE_VALUE SPACE
-                     | FLOAT SPACE INT SPACE CHARGE_VALUE
-                     | FLOAT SPACE INT SPACE CHARGE_VALUE SPACE
+        '''statement : FLOAT SPACE FLOAT spaces CHARGE_VALUE
+                     | FLOAT SPACE FLOAT spaces CHARGE_VALUE spaces
+                     | FLOAT SPACE INT spaces CHARGE_VALUE
+                     | FLOAT SPACE INT spaces CHARGE_VALUE spaces
                      '''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], convert_charge(p[5])))
@@ -750,6 +752,11 @@ class MGFParser(object):
                     | SPACE sentence '''
         self.content.sentence = str(p[1]) + self.content.sentence
         logging.debug("sentence")
+    
+    def p_spaces(self, p):
+        '''spaces : SPACE
+                  | SPACE spaces '''
+        logging.debug("spaces")
     
     def p_charges_int(self, p):
         """charges : INT

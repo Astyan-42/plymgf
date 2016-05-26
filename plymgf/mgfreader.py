@@ -19,9 +19,9 @@ class MGFReader(object):
     @ivar ions: the ion we are looking
     @type ions: int """
     
-    def __init__(self, mgf_path):
+    def __init__(self, mgf_path, to_open=True):
         """ init of the class """
-        self._data = read_mgf(mgf_path)
+        self._data = read_mgf(mgf_path, to_open=True)
         self._ions = 0
     
     def get_raw_data(self):

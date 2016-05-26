@@ -25,3 +25,5 @@ sourcedist:
 	python setup.py sdist
 register:
 	python setup.py register sdist upload
+sendupdate:
+	python setup.py sdist upload

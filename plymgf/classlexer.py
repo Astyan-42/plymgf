@@ -779,7 +779,7 @@ class MGFParser(object):
         logging.debug("list")
         
         
-def read_mgf(file_path):
+def read_mgf(file_path, to_open=True):
     """read the mgf file and parse it
     @param file_path: the path to the mgf file
     @type file_path: string
@@ -788,10 +788,13 @@ def read_mgf(file_path):
     @rtype: dict(string: dict|list)
     """
     parser = MGFParser()
-    try:
-        s = open(file_path)
-    except EOFError:
-        pass
+    if to_open:
+        try:
+            s = open(file_path)
+        except EOFError: #why ?I should want the error
+            pass
+    else:
+        s = file_path
     for line in s:
         if not re.match(r'(\n|\r)+', line):
             logging.debug("---------------")

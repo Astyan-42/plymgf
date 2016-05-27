@@ -21,7 +21,7 @@ class MGFReader(object):
     
     def __init__(self, mgf_path, to_open=True):
         """ init of the class """
-        self._data = read_mgf(mgf_path, to_open=True)
+        self._data = read_mgf(mgf_path, to_open=to_open)
         self._ions = 0
     
     def get_raw_data(self):

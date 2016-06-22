@@ -96,6 +96,12 @@ class MGFReader(object):
             return 0
         else:
             return 1
+            
+    def get_nb_ions(self):
+        """ get the number of ions 
+        @return: the number of ions
+        @rtype: int"""
+        return len(self._data["ions"])
     
     def set_ion(self, nb):
         """ set the ion parameter at nb

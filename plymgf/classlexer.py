@@ -13,6 +13,7 @@ import re
 import logging
 
 logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+DEBUG = False
 #~ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
@@ -79,7 +80,7 @@ class MGFLexer(object):
     @type lexer: a class/method ? from the plymgf parser"""
     
     def __init__(self):
-        self.lexer = lex.lex(module=self)
+        self.lexer = lex.lex(module=self, optimize=not DEBUG)
     
     local_tokens = ['COMP', 'ETAG', 'LOCUS', 'PEPMASS', 'RAWFILE',
                     'RAWSCANS', 'RTINSECONDS', 'SEQ', 'TAG', 'TITLE']
@@ -355,7 +356,7 @@ class MGFParser(object):
         self.lexer = MGFLexer()
         self.content = Content()
         self.tokens = self.lexer.tokens
-        self.parser = yacc.yacc(module=self, write_tables=0, debug=True)
+        self.parser = yacc.yacc(module=self, write_tables=0, debug=DEBUG)
 
     def parse(self, data):
         """method use to parse a line

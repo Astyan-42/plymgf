@@ -620,7 +620,13 @@ class MGFParser(object):
                      | PEPMASS EQUAL FLOAT spaces
                      | PEPMASS EQUAL FLOAT spaces FLOAT
                      | PEPMASS EQUAL FLOAT spaces INT spaces
-                     | PEPMASS EQUAL FLOAT spaces FLOAT spaces'''
+                     | PEPMASS EQUAL FLOAT spaces FLOAT spaces
+                     | PEPMASS EQUAL INT
+                     | PEPMASS EQUAL INT spaces INT
+                     | PEPMASS EQUAL INT spaces
+                     | PEPMASS EQUAL INT spaces FLOAT
+                     | PEPMASS EQUAL INT spaces INT spaces
+                     | PEPMASS EQUAL INT spaces FLOAT spaces'''
         self.in_local()
         if len(p) >= 6:
             self.content.ionsinfo["pepmass"] = (p[3], p[5])
@@ -672,29 +678,41 @@ class MGFParser(object):
     
     
     def p_statement_peak_charge_value(self, p):
-        '''statement : FLOAT SPACE FLOAT spaces CHARGE_VALUE
-                     | FLOAT SPACE FLOAT spaces CHARGE_VALUE spaces
-                     | FLOAT SPACE INT spaces CHARGE_VALUE
-                     | FLOAT SPACE INT spaces CHARGE_VALUE spaces
+        '''statement : FLOAT spaces FLOAT spaces CHARGE_VALUE
+                     | FLOAT spaces FLOAT spaces CHARGE_VALUE spaces
+                     | FLOAT spaces INT spaces CHARGE_VALUE
+                     | FLOAT spaces INT spaces CHARGE_VALUE spaces
+                     | INT spaces FLOAT spaces CHARGE_VALUE
+                     | INT spaces FLOAT spaces CHARGE_VALUE spaces
+                     | INT spaces INT spaces CHARGE_VALUE
+                     | INT spaces INT spaces CHARGE_VALUE spaces
                      '''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], convert_charge(p[5])))
         logging.debug("PEAK")
     
     def p_statement_peak_charge_int(self, p):
-        '''statement : FLOAT SPACE FLOAT SPACE INT
-                     | FLOAT SPACE FLOAT SPACE INT SPACE
-                     | FLOAT SPACE INT SPACE INT
-                     | FLOAT SPACE INT SPACE INT SPACE'''
+        '''statement : FLOAT spaces FLOAT spaces INT
+                     | FLOAT spaces FLOAT spaces INT spaces
+                     | FLOAT spaces INT spaces INT
+                     | FLOAT spaces INT spaces INT spaces
+                     | INT spaces FLOAT spaces INT
+                     | INT spaces FLOAT spaces INT spaces
+                     | INT spaces INT spaces INT
+                     | INT spaces INT spaces INT spaces'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], p[5]))
         logging.debug("PEAK")
         
     def p_statement_peak_wcharge(self, p):
-        '''statement : FLOAT SPACE FLOAT
-                     | FLOAT SPACE FLOAT SPACE
-                     | FLOAT SPACE INT
-                     | FLOAT SPACE INT SPACE'''
+        '''statement : FLOAT spaces FLOAT
+                     | FLOAT spaces FLOAT spaces
+                     | FLOAT spaces INT
+                     | FLOAT spaces INT spaces
+                     | INT spaces FLOAT
+                     | INT spaces FLOAT spaces
+                     | INT spaces INT
+                     | INT spaces INT spaces'''
         self.in_local()
         self.content.peaklist.append((p[1], p[3], 0))
         logging.debug("PEAK")

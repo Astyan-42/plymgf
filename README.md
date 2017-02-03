@@ -1,12 +1,10 @@
 A MGF parser
 =======================
 
-/!\Installation with pip corrected since 1.7 version
-
-This project allow you to read MGF files.
+This project allow you to read/parse MGF files.
 
 If you find a bug, have a problem to parse a MGF file or
-have a feature request please send it to me at : aurelien.vezin at etu.unistra.fr 
+have a feature request please crease an issue on github (https://github.com/Astyan-42/plymgf) and provid the MGF file causing the issue 
 
 it's use like :
 

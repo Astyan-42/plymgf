@@ -819,8 +819,10 @@ def read_mgf(file_path, to_open=True):
             logging.debug("---------------")
             logging.debug(line)
             parser.parse(line)
+    s.close()
     return {'meta' : parser.content.meta,
             'ions' : parser.content.ionslist}
+    
 
 if __name__ == '__main__':
     print(read_mgf(sys.argv[1]))

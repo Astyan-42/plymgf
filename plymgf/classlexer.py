@@ -823,4 +823,4 @@ def read_mgf(file_path, to_open=True):
             'ions' : parser.content.ionslist}
 
 if __name__ == '__main__':
-    print read_mgf(sys.argv[1])
+    print(read_mgf(sys.argv[1]))

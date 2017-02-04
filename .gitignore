@@ -6,3 +6,10 @@ plymgf/*.pyc
 doc
 .pypirc
 README
+build/
+dist/
+local/
+plymgf.egg-info/
+plymgf/__pycache__/
+py27/
+py34/

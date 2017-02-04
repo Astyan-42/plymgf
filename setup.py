@@ -16,7 +16,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.2.8',
 
-    description='A MGF files reader with PLY',
+    description='A MGF files parser with PLY',
     long_description=long_description,
 
     # The project's main homepage.

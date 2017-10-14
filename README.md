@@ -6,7 +6,7 @@ This project allow you to read/parse MGF files.
 If you find a bug, have a problem to parse a MGF file or
 have a feature request please crease an issue on github (https://github.com/Astyan-42/plymgf) and provid the MGF file causing the issue 
 
-it's use like :
+You can use it on a file with :
 
     from plymgf.mgfreader import MGFReader 
     
